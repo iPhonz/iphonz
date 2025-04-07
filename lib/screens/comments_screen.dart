@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import '../models/post.dart';
 import '../models/comment.dart';
+import '../models/user.dart';
 import '../services/comment_service.dart';
+import '../services/user_service.dart';
 import '../widgets/comment_item.dart';
 
 class CommentsScreen extends StatefulWidget {
@@ -18,6 +20,7 @@ class CommentsScreen extends StatefulWidget {
 
 class _CommentsScreenState extends State<CommentsScreen> {
   final CommentService _commentService = CommentService();
+  final UserService _userService = UserService();
   final TextEditingController _commentController = TextEditingController();
   late List<Comment> _comments;
   Comment? _replyingTo;
@@ -27,12 +30,14 @@ class _CommentsScreenState extends State<CommentsScreen> {
     super.initState();
     _comments = _commentService.getCommentsForPost(widget.post.id);
     _commentService.addListener(_refreshComments);
+    _userService.init(); // Initialize user service
   }
 
   @override
   void dispose() {
     _commentController.dispose();
     _commentService.removeListener(_refreshComments);
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -50,8 +55,8 @@ class _CommentsScreenState extends State<CommentsScreen> {
         // Add a reply to the selected comment
         _commentService.addReply(
           commentId: _replyingTo!.id,
-          username: 'current_user',
-          profileImage: 'assets/images/user_profile.jpg',
+          username: _userService.currentUser.username,
+          profileImage: _userService.currentUser.profileImage,
           content: content,
         );
         
@@ -63,8 +68,8 @@ class _CommentsScreenState extends State<CommentsScreen> {
         // Add a new top-level comment
         _commentService.addComment(
           postId: widget.post.id,
-          username: 'current_user',
-          profileImage: 'assets/images/user_profile.jpg',
+          username: _userService.currentUser.username,
+          profileImage: _userService.currentUser.profileImage,
           content: content,
         );
       }
@@ -108,7 +113,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
               children: [
                 CircleAvatar(
                   radius: 20,
-                  backgroundImage: AssetImage(widget.post.profileImage),
+                  backgroundImage: AssetImage(widget.post.user.profileImage),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -200,7 +205,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
                   children: [
                     CircleAvatar(
                       radius: 16,
-                      backgroundImage: const AssetImage('assets/images/user_profile.jpg'),
+                      backgroundImage: AssetImage(_userService.currentUser.profileImage),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
