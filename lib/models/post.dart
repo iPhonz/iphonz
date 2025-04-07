@@ -14,7 +14,7 @@ class Post {
   final DateTime timestamp;
 
   // Legacy properties (maintain backward compatibility)
-  String get username => user.name;
+  String get username => user.username;
   String get profileImage => user.profileImage;
   String? get memeImage => imageUrl;
   String? get tagline => user.bio;
@@ -48,15 +48,13 @@ class Post {
     bool hasJoined = false,
     DateTime? timestamp,
   }) {
-    // Create a basic user 
-    final user = User(
+    // Create a basic user using simplified constructor
+    final user = User.basic(
       id: 'user_$id', // Generate a user ID based on post ID
       username: username.toLowerCase().replaceAll(' ', '_'),
       name: username,
       profileImage: profileImage,
       bio: tagline,
-      followers: 0,
-      following: 0,
     );
 
     return Post(
