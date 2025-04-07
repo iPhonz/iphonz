@@ -269,7 +269,8 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                         Navigator.pop(context);
                         
                         // Create or get conversation
-                        final conversationId = await widget.messagingService._getOrCreateConversation(
+                        // Updated to use the public method instead of the private one
+                        final conversationId = await widget.messagingService.getOrCreateConversation(
                           _currentUserId!,
                           user.id,
                         );
