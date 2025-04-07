@@ -51,7 +51,8 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
       // Other user's profile
       _user = _userService.getUserById(widget.userId!) ?? _userService.currentUser;
       _isCurrentUser = _user.id == _userService.currentUser.id;
-      _isFollowing = _userService.currentUser.following.contains(_user.id);
+      // Check if following - using the mock implementation in UserService
+      _isFollowing = _userService.isFollowing(_user.id);
     }
     
     _loadUserPosts();
@@ -98,8 +99,8 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
 
   @override
   Widget build(BuildContext context) {
-    final followers = _user.followers.length;
-    final following = _user.following.length;
+    final followers = _user.followers;
+    final following = _user.following;
     
     return Scaffold(
       backgroundColor: const Color(0xFFF8E4E8), // Light pink background
@@ -278,11 +279,11 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                       ),
                       
                       // Bio
-                      if (_user.bio.isNotEmpty)
+                      if (_user.bio != null && _user.bio!.isNotEmpty)
                         Padding(
                           padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
                           child: Text(
-                            _user.bio,
+                            _user.bio!,
                             style: const TextStyle(fontSize: 16),
                           ),
                         ),
@@ -326,21 +327,22 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                                   ),
                                 ],
                               ),
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(Icons.calendar_today, 
-                                  color: Colors.grey, size: 16),
-                                const SizedBox(width: 2),
-                                Text(
-                                  'Joined ${_user.joinDate}',
-                                  style: const TextStyle(
-                                    color: Colors.grey,
-                                    fontSize: 14,
+                            if (_user.joinDate != null)
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(Icons.calendar_today, 
+                                    color: Colors.grey, size: 16),
+                                  const SizedBox(width: 2),
+                                  Text(
+                                    'Joined ${_user.joinDate!.year}',
+                                    style: const TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 14,
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
+                                ],
+                              ),
                             if (_user.userTag.isNotEmpty)
                               Container(
                                 padding: const EdgeInsets.symmetric(
