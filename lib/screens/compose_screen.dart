@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../services/post_service.dart';
+import '../models/post.dart';
 
 class ComposeScreen extends StatefulWidget {
   const ComposeScreen({Key? key}) : super(key: key);
@@ -13,6 +15,10 @@ class _ComposeScreenState extends State<ComposeScreen> {
   final int _maxChars = 500;
   String _selectedGroup = 'Yoga On Mondays';
   bool _canPost = false;
+  final PostService _postService = PostService();
+  
+  // Selected media
+  String? _selectedMedia;
 
   @override
   void initState() {
@@ -30,6 +36,20 @@ class _ComposeScreenState extends State<ComposeScreen> {
     setState(() {
       _canPost = _textController.text.trim().isNotEmpty;
     });
+  }
+
+  // Handle post creation
+  void _createPost() {
+    if (_canPost) {
+      _postService.createPost(
+        username: 'Yoga On Mondays',
+        profileImage: 'assets/images/profile1.jpg',
+        content: _textController.text,
+        memeImage: _selectedMedia,
+        tagline: 'All we do is skaaaate',
+      );
+      Navigator.pop(context);
+    }
   }
 
   // Convert hashtags to purple color
@@ -76,6 +96,34 @@ class _ComposeScreenState extends State<ComposeScreen> {
     );
   }
 
+  void _selectMedia(String mediaType) {
+    // In a real app, this would open a media picker
+    if (mediaType == 'Photo') {
+      setState(() {
+        _selectedMedia = 'assets/images/thinking_meme.jpg';
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Photo selected')),
+      );
+    } else if (mediaType == 'Camera') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Camera would open here')),
+      );
+    } else if (mediaType == 'GIF') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('GIF picker would open here')),
+      );
+    } else if (mediaType == 'Poll') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Poll creation would open here')),
+      );
+    } else if (mediaType == 'NSFW') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Content marked as NSFW')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // Get remaining character count
@@ -105,10 +153,7 @@ class _ComposeScreenState extends State<ComposeScreen> {
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
             child: ElevatedButton(
-              onPressed: _canPost ? () {
-                // TODO: Implement post functionality
-                Navigator.of(context).pop();
-              } : null,
+              onPressed: _canPost ? _createPost : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF7941FF),
                 foregroundColor: Colors.white,
@@ -162,7 +207,45 @@ class _ComposeScreenState extends State<ComposeScreen> {
                   ),
                   trailing: const Icon(Icons.keyboard_arrow_down),
                   onTap: () {
-                    // TODO: Implement group selection dropdown
+                    // Show a dialog to select a group
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Select Group'),
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            ListTile(
+                              title: const Text('Yoga On Mondays'),
+                              onTap: () {
+                                setState(() {
+                                  _selectedGroup = 'Yoga On Mondays';
+                                });
+                                Navigator.pop(context);
+                              },
+                            ),
+                            ListTile(
+                              title: const Text('Tech Enthusiasts'),
+                              onTap: () {
+                                setState(() {
+                                  _selectedGroup = 'Tech Enthusiasts';
+                                });
+                                Navigator.pop(context);
+                              },
+                            ),
+                            ListTile(
+                              title: const Text('Travel Addicts'),
+                              onTap: () {
+                                setState(() {
+                                  _selectedGroup = 'Travel Addicts';
+                                });
+                                Navigator.pop(context);
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
                   },
                 ),
               ),
@@ -185,8 +268,10 @@ class _ComposeScreenState extends State<ComposeScreen> {
                           maxLength: _maxChars,
                           maxLengthEnforcement: MaxLengthEnforcement.enforced,
                           style: const TextStyle(fontSize: 22),
-                          decoration: const InputDecoration(
-                            hintText: "What's on your mind?",
+                          decoration: InputDecoration(
+                            hintText: _textController.text.isEmpty 
+                                ? "Me: 'I'm going to bed #earlytonight.' Also me at 3 AM: watching a raccoon wash grapes in slow motion" 
+                                : "",
                             border: InputBorder.none,
                             counterText: '', // Hide the default counter
                           ),
@@ -194,15 +279,48 @@ class _ComposeScreenState extends State<ComposeScreen> {
                           textCapitalization: TextCapitalization.sentences,
                           keyboardType: TextInputType.multiline,
                           buildCounter: (context, {required currentLength, required isFocused, maxLength}) {
-                            return Text(
-                              '$remainingChars/${_maxChars}',
-                              style: TextStyle(
-                                color: remainingChars < 50 ? Colors.red : Colors.grey,
+                            return Align(
+                              alignment: Alignment.bottomRight,
+                              child: Text(
+                                '$remainingChars',
+                                style: TextStyle(
+                                  color: remainingChars < 50 ? Colors.red : Colors.grey,
+                                ),
                               ),
                             );
                           },
                         ),
                       ),
+                      
+                      // Selected media preview (if any)
+                      if (_selectedMedia != null) ...[
+                        const SizedBox(height: 16),
+                        Container(
+                          height: 150,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            image: DecorationImage(
+                              image: AssetImage(_selectedMedia!),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          child: Align(
+                            alignment: Alignment.topRight,
+                            child: IconButton(
+                              icon: const Icon(
+                                Icons.close,
+                                color: Colors.white,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _selectedMedia = null;
+                                });
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
                       
                       // Media attachment options
                       Container(
@@ -217,20 +335,23 @@ class _ComposeScreenState extends State<ComposeScreen> {
                           children: [
                             _buildMediaButton(Icons.photo, 'Photo'),
                             _buildMediaButton(Icons.camera_alt, 'Camera'),
-                            _buildMediaButton(Icons.gif, 'GIF'),
+                            _buildMediaButton(Icons.gif_box, 'GIF'),
                             _buildMediaButton(Icons.bar_chart, 'Poll'),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                              decoration: BoxDecoration(
-                                color: Colors.black,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: const Text(
-                                'NSFW',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
+                            GestureDetector(
+                              onTap: () => _selectMedia('NSFW'),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                decoration: BoxDecoration(
+                                  color: Colors.black,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: const Text(
+                                  'NSFW',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                  ),
                                 ),
                               ),
                             ),
@@ -251,9 +372,7 @@ class _ComposeScreenState extends State<ComposeScreen> {
   Widget _buildMediaButton(IconData icon, String label) {
     return IconButton(
       icon: Icon(icon, color: Colors.black),
-      onPressed: () {
-        // TODO: Implement media selection
-      },
+      onPressed: () => _selectMedia(label),
       tooltip: label,
     );
   }
