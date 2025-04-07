@@ -78,8 +78,8 @@ class User {
     String? profileImage,
     String? bannerImage,
     List<String>? interests,
-    List<String>? followers,
-    List<String>? following,
+    int? followers,  // Changed from List<String> to int
+    int? following,  // Changed from List<String> to int
     List<String>? postIds,
     List<String>? groups,
     bool? isVerified,
@@ -99,8 +99,8 @@ class User {
       profileImage: profileImage ?? this.profileImage,
       bannerImage: bannerImage ?? this.bannerImage,
       interests: interests ?? this.interests,
-      followers: followers != null ? List<String>.from(followers) : this.followers,
-      following: following != null ? List<String>.from(following) : this.following,
+      followers: followers ?? this.followers,  // Updated to use int directly
+      following: following ?? this.following,  // Updated to use int directly
       postIds: postIds ?? this.postIds,
       groups: groups ?? this.groups,
       isVerified: isVerified ?? this.isVerified,
