@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import '../models/post.dart';
+import '../models/group.dart';
 import '../screens/comments_screen.dart';
+import '../screens/group_detail_screen.dart';
 import '../services/comment_service.dart';
+import '../services/group_service.dart';
 
 class PostItem extends StatelessWidget {
   final Post post;
@@ -9,6 +12,8 @@ class PostItem extends StatelessWidget {
   final VoidCallback? onToggleJoin;
   final VoidCallback? onComment;
   final VoidCallback? onShare;
+  final Group? group; // Optional group parameter if post is from a group
+  final bool showJoinButton; // Option to hide the join button in some contexts
 
   const PostItem({
     Key? key,
@@ -17,6 +22,8 @@ class PostItem extends StatelessWidget {
     this.onToggleJoin,
     this.onComment,
     this.onShare,
+    this.group,
+    this.showJoinButton = true,
   }) : super(key: key);
 
   @override
@@ -38,63 +45,102 @@ class PostItem extends StatelessWidget {
                 // Profile image
                 CircleAvatar(
                   radius: 20,
-                  backgroundImage: AssetImage(post.profileImage),
+                  backgroundImage: AssetImage(post.user.profileImage),
                 ),
                 const SizedBox(width: 10),
                 
-                // Username and tagline
+                // Username and tagline/group
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        post.username,
+                        post.user.name,
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                           color: Colors.white,
                         ),
                       ),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.people_outline,
-                            size: 14,
-                            color: Colors.grey,
+                      if (group != null)
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => GroupDetailScreen(group: group!),
+                              ),
+                            );
+                          },
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.group,
+                                size: 14,
+                                color: Color(0xFF7941FF),
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                group!.name,
+                                style: const TextStyle(
+                                  color: Color(0xFF7941FF),
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 4),
-                          Text(
-                            post.tagline ?? 'All we do is skaaaate',
-                            style: TextStyle(
-                              color: Colors.grey.shade600,
-                              fontSize: 14,
+                        )
+                      else if (post.user.bio != null && post.user.bio!.isNotEmpty)
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.person_outline,
+                              size: 14,
+                              color: Colors.grey,
                             ),
-                          ),
-                        ],
-                      ),
+                            const SizedBox(width: 4),
+                            Text(
+                              post.user.bio!,
+                              style: TextStyle(
+                                color: Colors.grey.shade600,
+                                fontSize: 14,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
                     ],
                   ),
                 ),
                 
-                // Joined button
-                GestureDetector(
-                  onTap: onToggleJoin,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: post.hasJoined ? const Color(0xFF7941FF) : null,
-                      borderRadius: BorderRadius.circular(20),
-                      border: post.hasJoined ? null : Border.all(color: const Color(0xFF7941FF)),
-                    ),
-                    child: Text(
-                      post.hasJoined ? 'Joined' : 'Join',
-                      style: TextStyle(
-                        color: post.hasJoined ? Colors.white : const Color(0xFF7941FF),
-                        fontWeight: FontWeight.bold,
+                // Joined button (if enabled)
+                if (showJoinButton && (group != null || post.isJoined != null))
+                  GestureDetector(
+                    onTap: onToggleJoin,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: (group?.isJoined ?? post.isJoined ?? false) 
+                            ? const Color(0xFF7941FF) 
+                            : null,
+                        borderRadius: BorderRadius.circular(20),
+                        border: (group?.isJoined ?? post.isJoined ?? false) 
+                            ? null 
+                            : Border.all(color: const Color(0xFF7941FF)),
+                      ),
+                      child: Text(
+                        (group?.isJoined ?? post.isJoined ?? false) ? 'Joined' : 'Join',
+                        style: TextStyle(
+                          color: (group?.isJoined ?? post.isJoined ?? false) 
+                              ? Colors.white 
+                              : const Color(0xFF7941FF),
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
-                ),
               ],
             ),
           ),
@@ -111,14 +157,14 @@ class PostItem extends StatelessWidget {
               ),
             ),
           
-          // Meme image if available
-          if (post.memeImage != null)
+          // Post image if available
+          if (post.imageUrl != null)
             Container(
               width: double.infinity,
               height: 240,
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage(post.memeImage!),
+                  image: AssetImage(post.imageUrl!),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -135,14 +181,14 @@ class PostItem extends StatelessWidget {
                   onTap: onShare,
                   child: _buildEngagementButton(
                     icon: Icons.send_outlined,
-                    count: post.shares > 0 ? post.shares : null,
+                    count: null,
                   ),
                 ),
                 
                 // Refresh/Repost button
                 _buildEngagementButton(
                   icon: Icons.refresh_rounded,
-                  count: post.shares > 0 ? post.shares : null,
+                  count: null,
                 ),
                 
                 // Comments button
@@ -170,6 +216,18 @@ class PostItem extends StatelessWidget {
                   ),
                 ),
               ],
+            ),
+          ),
+          
+          // Display timestamp
+          Padding(
+            padding: const EdgeInsets.only(left: 12.0, right: 12.0, bottom: 12.0),
+            child: Text(
+              _getTimeAgo(post.timestamp),
+              style: TextStyle(
+                color: Colors.grey.shade600,
+                fontSize: 12,
+              ),
             ),
           ),
         ],
@@ -231,5 +289,25 @@ class PostItem extends StatelessWidget {
     }
     
     return spans;
+  }
+  
+  // Helper method to format timestamp
+  String _getTimeAgo(DateTime timestamp) {
+    final now = DateTime.now();
+    final difference = now.difference(timestamp);
+    
+    if (difference.inSeconds < 60) {
+      return '${difference.inSeconds}s ago';
+    } else if (difference.inMinutes < 60) {
+      return '${difference.inMinutes}m ago';
+    } else if (difference.inHours < 24) {
+      return '${difference.inHours}h ago';
+    } else if (difference.inDays < 30) {
+      return '${difference.inDays}d ago';
+    } else if (difference.inDays < 365) {
+      return '${(difference.inDays / 30).floor()}mo ago';
+    } else {
+      return '${(difference.inDays / 365).floor()}y ago';
+    }
   }
 }
