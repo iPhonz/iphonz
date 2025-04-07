@@ -84,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // Get unread notifications count
     final unreadCount = _notificationService.getUnreadCount();
     
-    // Get unread group spills count
+    // Get unread group spills count (still tracked for the bottom nav)
     final unreadGroupsCount = _groupService.getJoinedGroups()
         .fold<int>(0, (int sum, group) => sum + group.newSpillsCount);
     
@@ -108,41 +108,7 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: const Icon(Icons.search, color: Colors.black),
             onPressed: () {},
           ),
-          // Groups icon
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.group, color: Colors.black),
-                onPressed: _navigateToGroupsScreen,
-              ),
-              if (unreadGroupsCount > 0)
-                Positioned(
-                  right: 8,
-                  top: 8,
-                  child: Container(
-                    padding: const EdgeInsets.all(2),
-                    decoration: BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    constraints: const BoxConstraints(
-                      minWidth: 18,
-                      minHeight: 18,
-                    ),
-                    child: Text(
-                      unreadGroupsCount > 9 ? '9+' : '$unreadGroupsCount',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-            ],
-          ),
+          // Removed the redundant group icon from here since it's already in the bottom navigation
         ],
       ),
       // Post list
