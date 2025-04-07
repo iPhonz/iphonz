@@ -25,7 +25,7 @@ class MessageBubble extends StatelessWidget {
             : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          if (!isCurrentUser) ...[  
+          if (!isCurrentUser) ...[
             CircleAvatar(
               radius: 16,
               backgroundImage: NetworkImage(user!.profileImage),
@@ -82,7 +82,7 @@ class MessageBubble extends StatelessWidget {
                           fontSize: 10,
                         ),
                       ),
-                      if (isCurrentUser) ...[  
+                      if (isCurrentUser) ...[
                         const SizedBox(width: 4),
                         Icon(
                           message.isRead 
