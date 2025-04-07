@@ -24,11 +24,15 @@ class SpillApp extends StatelessWidget {
       title: 'SPILL',
       theme: ThemeData(
         primaryColor: Colors.black,
-        scaffoldBackgroundColor: Colors.white,
+        scaffoldBackgroundColor: Color(0xFFF8E4E8), // Light pink background
         fontFamily: 'Inter',
         appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.white,
+          backgroundColor: Colors.transparent,
           elevation: 0,
+        ),
+        colorScheme: ColorScheme.light(
+          primary: Colors.black,
+          secondary: Color(0xFF7941FF), // Purple accent color for buttons
         ),
       ),
       home: const HomeScreen(),
