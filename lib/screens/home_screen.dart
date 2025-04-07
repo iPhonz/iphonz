@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../widgets/post_item.dart';
 import '../models/post.dart';
+import '../services/post_service.dart';
 import 'compose_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -11,39 +12,28 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // Sample data to populate the feed based on the screenshot
-  final List<Post> _posts = [
-    Post(
-      username: 'wanderlust_gypsy',
-      profileImage: 'assets/images/profile1.jpg',
-      content: "Me: 'I'm going to bed #earlytonight.' Also me at 3 AM: watching a raccoon wash grapes in slow motion",
-      memeImage: 'assets/images/thinking_meme.jpg',  // Rolling eyes meme
-      likes: 16,
-      comments: 0,
-      shares: 0,
-      tagline: 'All we do is skaaaate',
-      hasJoined: true,
-      commentsList: [
-        Comment(
-          username: 'mendacious_ninja_0',
-          profileImage: 'assets/images/profile3.jpg',
-          content: 'One thing about Black folks: we gon' laugh through the...',
-        ),
-      ],
-    ),
-    Post(
-      username: 'wanderlust_gypsy',
-      profileImage: 'assets/images/profile1.jpg',
-      content: 'Sometimes it just makes more sense to just rest. #inmybag #skateboarding',
-      likes: 16,
-      comments: 0,
-      shares: 0,
-      tagline: 'All we do is skaaaate',
-      hasJoined: false,
-    ),
-  ];
-
   int _selectedIndex = 0;
+  final PostService _postService = PostService();
+  late List<Post> _posts;
+
+  @override
+  void initState() {
+    super.initState();
+    _posts = _postService.getPosts();
+    _postService.addListener(_refreshPosts);
+  }
+
+  @override
+  void dispose() {
+    _postService.removeListener(_refreshPosts);
+    super.dispose();
+  }
+
+  void _refreshPosts() {
+    setState(() {
+      _posts = _postService.getPosts();
+    });
+  }
 
   // Method to navigate to compose screen
   void _navigateToComposeScreen() {
@@ -82,7 +72,11 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: EdgeInsets.zero,
         itemCount: _posts.length,
         itemBuilder: (context, index) {
-          return PostItem(post: _posts[index]);
+          return PostItem(
+            post: _posts[index],
+            onLike: () => _postService.likePost(index),
+            onToggleJoin: () => _postService.toggleJoin(index),
+          );
         },
       ),
       // Custom bottom navigation bar with purple accent
@@ -153,6 +147,12 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
+      ),
+      // Floating action button for quick compose access
+      floatingActionButton: FloatingActionButton(
+        onPressed: _navigateToComposeScreen,
+        backgroundColor: const Color(0xFF7941FF),
+        child: const Icon(Icons.edit, color: Colors.white),
       ),
     );
   }
