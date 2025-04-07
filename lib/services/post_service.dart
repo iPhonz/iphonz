@@ -1,6 +1,7 @@
 import 'dart:math';
 import '../models/post.dart';
 import '../models/comment.dart';
+import '../models/user.dart';
 
 class PostService {
   // Singleton pattern
@@ -16,38 +17,61 @@ class PostService {
     return 'post_${DateTime.now().millisecondsSinceEpoch}_${_random.nextInt(1000)}';
   }
 
+  // Sample users
+  final User _user1 = User(
+    id: 'user_1',
+    username: 'wanderlust_gypsy',
+    name: 'Wanderlust Gypsy',
+    profileImage: 'assets/images/profile1.jpg',
+    bio: 'All we do is skaaaate',
+    followers: 1240,
+    following: 420,
+  );
+
   // In-memory posts storage
   final List<Post> _posts = [
     Post(
       id: 'post_1',
-      username: 'wanderlust_gypsy',
-      profileImage: 'assets/images/profile1.jpg',
+      user: User(
+        id: 'user_1',
+        username: 'wanderlust_gypsy',
+        name: 'Wanderlust Gypsy',
+        profileImage: 'assets/images/profile1.jpg',
+        bio: 'All we do is skaaaate',
+        followers: 1240,
+        following: 420,
+      ),
       content: "Me: 'I'm going to bed #earlytonight.' Also me at 3 AM: watching a raccoon wash grapes in slow motion",
-      memeImage: 'assets/images/thinking_meme.jpg',
+      imageUrl: 'assets/images/thinking_meme.jpg',
       likes: 16,
       comments: 0,
       shares: 4,
-      tagline: 'All we do is skaaaate',
-      hasJoined: true,
+      isJoined: true,
       commentsList: [],
       timestamp: DateTime.now().subtract(const Duration(hours: 2)),
     ),
     Post(
       id: 'post_2',
-      username: 'wanderlust_gypsy',
-      profileImage: 'assets/images/profile1.jpg',
+      user: User(
+        id: 'user_1',
+        username: 'wanderlust_gypsy',
+        name: 'Wanderlust Gypsy',
+        profileImage: 'assets/images/profile1.jpg',
+        bio: 'All we do is skaaaate',
+        followers: 1240,
+        following: 420,
+      ),
       content: 'Sometimes it just makes more sense to just rest. #inmybag #skateboarding',
       likes: 16,
       comments: 0,
       shares: 0,
-      tagline: 'All we do is skaaaate',
-      hasJoined: false,
+      isJoined: false,
       timestamp: DateTime.now().subtract(const Duration(hours: 4)),
     ),
   ];
 
   // Callbacks for post updates
-  List<Function()> _listeners = [];
+  final List<Function()> _listeners = [];
 
   // Add a listener
   void addListener(Function() listener) {
@@ -88,17 +112,26 @@ class PostService {
     String? memeImage,
     String? tagline,
   }) {
+    // Create or reuse a user
+    final user = User(
+      id: 'user_$username',
+      username: username.toLowerCase().replaceAll(' ', '_'),
+      name: username,
+      profileImage: profileImage,
+      bio: tagline ?? 'All we do is skaaaate',
+      followers: 0,
+      following: 0,
+    );
+
     final newPost = Post(
       id: _generateId(),
-      username: username,
-      profileImage: profileImage,
+      user: user,
       content: content,
-      memeImage: memeImage,
+      imageUrl: memeImage,
       likes: 0,
       comments: 0,
       shares: 0,
-      tagline: tagline ?? 'All we do is skaaaate',
-      hasJoined: true,
+      isJoined: true,
       commentsList: [],
       timestamp: DateTime.now(),
     );
@@ -157,7 +190,7 @@ class PostService {
     if (index >= 0 && index < _posts.length) {
       final post = _posts[index];
       final updatedPost = post.copyWith(
-        hasJoined: !post.hasJoined,
+        isJoined: !(post.isJoined ?? false),
       );
       
       _posts[index] = updatedPost;
