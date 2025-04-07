@@ -61,7 +61,7 @@ class MessagingService {
     MessageType type = MessageType.text,
   }) async {
     // Find or create a conversation between these users
-    final conversationId = await _getOrCreateConversation(senderId, receiverId);
+    final conversationId = await getOrCreateConversation(senderId, receiverId);
     
     // Create the message
     final message = Message(
@@ -119,7 +119,8 @@ class MessagingService {
   }
   
   // Start a new conversation or get existing one
-  Future<String> _getOrCreateConversation(String user1Id, String user2Id) async {
+  // Changed from private (_getOrCreateConversation) to public (getOrCreateConversation)
+  Future<String> getOrCreateConversation(String user1Id, String user2Id) async {
     // Check if conversation already exists
     final existingConversation = _conversations.values.firstWhere(
       (conv) => 
