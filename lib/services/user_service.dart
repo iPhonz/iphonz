@@ -16,38 +16,45 @@ class UserService extends ChangeNotifier {
       id: 'user1',
       username: 'pastaleoiancha',
       displayName: 'Leslie Alexander',
+      profileImage: 'assets/images/user_profile.jpg',
+      bio: '🌱 Cultivating life & beauty 🌸 | Lover of organic gardens, artful moments, and creativity in bloom. ✨ Let\'s grow together!',
+      followers: 325,
+      following: 182,
       handle: '@pastaleoiancha',
-      pronouns: '(he/him)',
+      pronouns: 'he/him',
       location: 'Los Angeles, CA',
       website: 'mywebsite.com',
-      bio: '🌱 Cultivating life & beauty 🌸 | Lover of organic gardens, artful moments, and creativity in bloom. ✨ Let\'s grow together!',
-      profileImage: 'assets/images/user_profile.jpg',
       bannerImage: 'assets/images/user_banner.jpg',
       interests: ['Music', 'Pop Culture', 'Politics', 'Beyonce'],
-      followers: ['user2', 'user3', 'user4'],
-      following: ['user2', 'user5', 'user6'],
       postIds: ['post1', 'post3', 'post5'],
       groups: ['VBrooks', 'SWright', 'BHill22', 'JRiver', 'MMartinez', 'RLewis'],
       isVerified: false,
-      joinDate: 'April 2023',
+      joinDate: DateTime(2023, 4, 15),
+      userTag: '',
       allowsMessages: false,
     ),
     'user2': User(
       id: 'user2',
       username: 'keelyj',
       displayName: 'Keely Jones',
-      handle: '@keelyjones',
       profileImage: 'assets/images/user2_profile.jpg',
-      joinDate: 'January 2024',
+      bio: 'Living my best life ✨',
+      followers: 1240,
+      following: 567,
+      handle: '@keelyjones',
+      joinDate: DateTime(2024, 1, 7),
       postIds: ['post2', 'post4'],
     ),
     'user3': User(
       id: 'user3',
       username: 'marcusd',
       displayName: 'Marcus Davis',
-      handle: '@marcusd',
       profileImage: 'assets/images/user3_profile.jpg',
-      joinDate: 'February 2024',
+      bio: 'Music producer 🎵 | Travel enthusiast ✈️',
+      followers: 5230,
+      following: 328,
+      handle: '@marcusd',
+      joinDate: DateTime(2024, 2, 12),
       isVerified: true,
     ),
   };
@@ -65,59 +72,61 @@ class UserService extends ChangeNotifier {
     return _users[userId];
   }
 
-  // Get user's followers
+  // Get user's followers (mock implementation)
   List<User> getCurrentUserFollowers() {
-    return _currentUser.followers
-        .map((id) => _users[id])
-        .whereType<User>()
-        .toList();
+    // In a real app, we'd fetch actual followers by ID
+    // For now, just return a sample of other users
+    return _users.values.where((user) => user.id != _currentUser.id).take(2).toList();
   }
 
-  // Get user's following
+  // Get user's following (mock implementation)
   List<User> getCurrentUserFollowing() {
-    return _currentUser.following
-        .map((id) => _users[id])
-        .whereType<User>()
-        .toList();
+    // In a real app, we'd fetch actual following by ID
+    // For now, just return a sample of other users
+    return _users.values.where((user) => user.id != _currentUser.id).take(3).toList();
   }
 
-  // Follow a user
+  // Follow a user (mock implementation)
   void followUser(String userId) {
-    if (!_currentUser.following.contains(userId)) {
-      final updatedFollowing = List<String>.from(_currentUser.following)
-        ..add(userId);
+    if (_users.containsKey(userId)) {
+      // Increment follower count of target user
+      final targetUser = _users[userId]!;
+      _users[userId] = targetUser.copyWith(
+        followers: targetUser.followers + 1,
+      );
       
-      _currentUser = _currentUser.copyWith(following: updatedFollowing);
+      // Increment following count of current user
+      _currentUser = _currentUser.copyWith(
+        following: _currentUser.following + 1,
+      );
       
-      // Update the target user's followers list
-      if (_users.containsKey(userId)) {
-        final targetUser = _users[userId]!;
-        final updatedFollowers = List<String>.from(targetUser.followers)
-          ..add(_currentUser.id);
-        
-        _users[userId] = targetUser.copyWith(followers: updatedFollowers);
-      }
+      // Update the current user in the map
+      _users[_currentUser.id] = _currentUser;
       
       notifyListeners();
     }
   }
 
-  // Unfollow a user
+  // Unfollow a user (mock implementation)
   void unfollowUser(String userId) {
-    if (_currentUser.following.contains(userId)) {
-      final updatedFollowing = List<String>.from(_currentUser.following)
-        ..remove(userId);
-      
-      _currentUser = _currentUser.copyWith(following: updatedFollowing);
-      
-      // Update the target user's followers list
-      if (_users.containsKey(userId)) {
-        final targetUser = _users[userId]!;
-        final updatedFollowers = List<String>.from(targetUser.followers)
-          ..remove(_currentUser.id);
-        
-        _users[userId] = targetUser.copyWith(followers: updatedFollowers);
+    if (_users.containsKey(userId)) {
+      // Decrement follower count of target user
+      final targetUser = _users[userId]!;
+      if (targetUser.followers > 0) {
+        _users[userId] = targetUser.copyWith(
+          followers: targetUser.followers - 1,
+        );
       }
+      
+      // Decrement following count of current user
+      if (_currentUser.following > 0) {
+        _currentUser = _currentUser.copyWith(
+          following: _currentUser.following - 1,
+        );
+      }
+      
+      // Update the current user in the map
+      _users[_currentUser.id] = _currentUser;
       
       notifyListeners();
     }
@@ -163,10 +172,10 @@ class UserService extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Get users in a group
+  // Get users in a group (mock implementation)
   List<User> getUsersInGroup(String groupName) {
-    return _users.values
-        .where((user) => user.groups.contains(groupName))
-        .toList();
+    // In a real app, we'd filter by actual group membership
+    // For now, return a sample of users
+    return _users.values.take(2).toList();
   }
 }
