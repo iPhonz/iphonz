@@ -156,7 +156,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                 ),
                 
-                // Profile photo
+                // Profile photo - use Positioned instead of negative margin
                 Positioned(
                   left: 20,
                   bottom: -50,
