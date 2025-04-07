@@ -1,39 +1,12 @@
-name: spill_clone
-description: A clone of the SPILL social media app
-publish_to: 'none'
-version: 1.0.1+2
-
-environment:
-  sdk: ">=2.17.0 <3.0.0"
+# Add to your existing pubspec.yaml file
+# This is only the dependencies section - you'll need to add this to your existing file
 
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.5
-  font_awesome_flutter: ^10.4.0
-  google_fonts: ^4.0.3
-  provider: ^6.0.5
-  cached_network_image: ^3.2.3
-  flutter_svg: ^2.0.5
+  # Existing dependencies...
 
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
-  flutter_lints: ^2.0.1
-
-flutter:
-  uses-material-design: true
-  
-  assets:
-    - assets/images/
-    
-  fonts:
-    - family: Inter
-      fonts:
-        - asset: assets/fonts/Inter-Regular.ttf
-        - asset: assets/fonts/Inter-Medium.ttf
-          weight: 500
-        - asset: assets/fonts/Inter-SemiBold.ttf
-          weight: 600
-        - asset: assets/fonts/Inter-Bold.ttf
-          weight: 700
+  # Add these new dependencies for messaging functionality
+  uuid: ^3.0.7        # For generating unique IDs
+  image_picker: ^0.8.7  # For selecting images
+  timeago: ^3.4.0     # For formatting timestamps
