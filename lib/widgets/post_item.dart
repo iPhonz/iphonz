@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/post.dart';
+import '../screens/comments_screen.dart';
+import '../services/comment_service.dart';
 
 class PostItem extends StatelessWidget {
   final Post post;
@@ -19,8 +21,11 @@ class PostItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final commentService = CommentService();
+    final comments = commentService.getCommentsForPost(post.id);
+    
     return Container(
-      color: Colors.white,
+      color: Colors.black,
       margin: const EdgeInsets.only(bottom: 12.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -47,6 +52,7 @@ class PostItem extends StatelessWidget {
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
+                          color: Colors.white,
                         ),
                       ),
                       Row(
@@ -99,7 +105,7 @@ class PostItem extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
               child: RichText(
                 text: TextSpan(
-                  style: const TextStyle(fontSize: 18, color: Colors.black),
+                  style: const TextStyle(fontSize: 18, color: Colors.white),
                   children: _buildTextWithHashtags(post.content),
                 ),
               ),
@@ -129,16 +135,29 @@ class PostItem extends StatelessWidget {
                   onTap: onShare,
                   child: _buildEngagementButton(
                     icon: Icons.send_outlined,
-                    count: null,
+                    count: post.shares > 0 ? post.shares : null,
                   ),
+                ),
+                
+                // Refresh/Repost button
+                _buildEngagementButton(
+                  icon: Icons.refresh_rounded,
+                  count: post.shares > 0 ? post.shares : null,
                 ),
                 
                 // Comments button
                 GestureDetector(
-                  onTap: onComment,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CommentsScreen(post: post),
+                      ),
+                    );
+                  },
                   child: _buildEngagementButton(
                     icon: Icons.chat_bubble_outline,
-                    count: post.comments,
+                    count: comments.length > 0 ? comments.length : null,
                   ),
                 ),
                 
@@ -147,54 +166,12 @@ class PostItem extends StatelessWidget {
                   onTap: onLike,
                   child: _buildEngagementButton(
                     icon: Icons.coffee_outlined,
-                    count: post.likes,
+                    count: post.likes > 0 ? post.likes : null,
                   ),
                 ),
               ],
             ),
           ),
-          
-          // Comments section if available
-          if (post.commentsList.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: post.commentsList.map((comment) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CircleAvatar(
-                          radius: 16,
-                          backgroundImage: AssetImage(comment.profileImage),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                comment.username,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                ),
-                              ),
-                              Text(
-                                comment.content,
-                                style: const TextStyle(fontSize: 14),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }).toList(),
-              ),
-            ),
         ],
       ),
     );
@@ -210,14 +187,14 @@ class PostItem extends StatelessWidget {
         Icon(
           icon,
           size: 20,
-          color: Colors.black,
+          color: Colors.white,
         ),
         if (count != null) ...[  
           const SizedBox(width: 4),
           Text(
             count.toString(),
             style: const TextStyle(
-              color: Colors.black,
+              color: Colors.white,
               fontSize: 14,
             ),
           ),
