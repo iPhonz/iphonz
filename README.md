@@ -10,13 +10,19 @@ A Flutter implementation of the SPILL social media app based on the provided des
 - Post interactions (share, comment, like)
 - "Joined" and "Join" buttons for each post
 - Comment section for posts with threaded replies
-- Bottom navigation bar with home, notifications, create post, search, and profile
+- Bottom navigation bar with home, groups, create post, notifications, and profile
 - Purple accent colors throughout the UI
 - **Compose functionality** with 500 character limit and media attachments
 - **Notifications system** with filtering and approval actions
 - **Threaded comments** with support for replies, images, and likes
 - **User profiles** with full customization, follows, and post history
 - **Groups functionality** with categories, joined groups, and group posts
+
+## UI Improvements
+
+- Streamlined navigation by removing redundant group icon from the top app bar
+- Consolidated group navigation to use only the dedicated icon in the bottom bar
+- Improved visual clarity by reducing duplicate UI elements
 
 ## Compose Screen Features
 
