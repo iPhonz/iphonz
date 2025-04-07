@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import '../widgets/post_item.dart';
 import '../models/post.dart';
 import '../services/post_service.dart';
+import '../services/notification_service.dart';
 import 'compose_screen.dart';
+import 'notifications_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -14,8 +16,9 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
   final PostService _postService = PostService();
+  final NotificationService _notificationService = NotificationService();
   late List<Post> _posts;
-
+  
   @override
   void initState() {
     super.initState();
@@ -42,9 +45,20 @@ class _HomeScreenState extends State<HomeScreen> {
       MaterialPageRoute(builder: (context) => const ComposeScreen()),
     );
   }
+  
+  // Method to navigate to notifications screen
+  void _navigateToNotificationsScreen() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const NotificationsScreen()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    // Get unread notifications count
+    final unreadCount = _notificationService.getUnreadCount();
+    
     return Scaffold(
       // Use a gradient background color
       backgroundColor: const Color(0xFFF8E4E8),
@@ -105,6 +119,9 @@ class _HomeScreenState extends State<HomeScreen> {
               if (index == 2) {
                 // Navigate to compose screen when the center "+" button is tapped
                 _navigateToComposeScreen();
+              } else if (index == 3) {
+                // Navigate to notifications screen when the notifications icon is tapped
+                _navigateToNotificationsScreen();
               } else {
                 _selectedIndex = index;
               }
@@ -133,9 +150,29 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               label: 'Create',
             ),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.notifications_none),
-              activeIcon: Icon(Icons.notifications),
+            BottomNavigationBarItem(
+              icon: Stack(
+                children: [
+                  const Icon(Icons.notifications_none),
+                  if (unreadCount > 0)
+                    Positioned(
+                      right: 0,
+                      top: 0,
+                      child: Container(
+                        padding: const EdgeInsets.all(1),
+                        decoration: const BoxDecoration(
+                          color: Colors.blue,
+                          shape: BoxShape.circle,
+                        ),
+                        constraints: const BoxConstraints(
+                          minWidth: 8,
+                          minHeight: 8,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              activeIcon: const Icon(Icons.notifications),
               label: 'Notifications',
             ),
             BottomNavigationBarItem(
