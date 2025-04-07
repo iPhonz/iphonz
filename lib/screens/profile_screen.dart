@@ -172,21 +172,262 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
           
           // Profile header with photo, name, bio
           SliverToBoxAdapter(
-            child: Container(
-              padding: const EdgeInsets.only(bottom: 15),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(20),
-                  bottomRight: Radius.circular(20),
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                // White container for content
+                Container(
+                  padding: const EdgeInsets.only(top: 50, bottom: 15),
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(20),
+                      bottomRight: Radius.circular(20),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Follow/Edit button 
+                      Align(
+                        alignment: Alignment.topRight,
+                        child: Container(
+                          margin: const EdgeInsets.only(right: 20, top: 10),
+                          child: _isCurrentUser
+                            ? OutlinedButton(
+                                onPressed: _navigateToEditProfile,
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: Color(0xFF7941FF),
+                                  side: BorderSide(color: Color(0xFF7941FF)),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                ),
+                                child: const Text('Edit Profile'),
+                              )
+                            : ElevatedButton(
+                                onPressed: _toggleFollow,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: _isFollowing 
+                                    ? Colors.white 
+                                    : Color(0xFF7941FF),
+                                  foregroundColor: _isFollowing 
+                                    ? Color(0xFF7941FF) 
+                                    : Colors.white,
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                    side: BorderSide(
+                                      color: Color(0xFF7941FF), 
+                                      width: 1,
+                                    ),
+                                  ),
+                                ),
+                                child: Text(_isFollowing ? 'Following' : 'Follow'),
+                              ),
+                        ),
+                      ),
+                      
+                      // Name, handle, verification badge
+                      Padding(
+                        padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
+                        child: Row(
+                          children: [
+                            Text(
+                              _user.displayName,
+                              style: const TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(width: 5),
+                            if (_user.isVerified)
+                              const Icon(
+                                Icons.verified,
+                                color: Color(0xFF7941FF),
+                                size: 20,
+                              ),
+                          ],
+                        ),
+                      ),
+                      
+                      // Handle and pronouns
+                      Padding(
+                        padding: const EdgeInsets.only(left: 20, right: 20),
+                        child: Row(
+                          children: [
+                            Text(
+                              _user.handle,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            if (_user.pronouns.isNotEmpty) ...[
+                              const SizedBox(width: 5),
+                              Text(
+                                _user.pronouns,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                      
+                      // Bio
+                      if (_user.bio.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
+                          child: Text(
+                            _user.bio,
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                        ),
+                      
+                      // Location, website, and join date
+                      Padding(
+                        padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
+                        child: Wrap(
+                          spacing: 10,
+                          runSpacing: 5,
+                          children: [
+                            if (_user.location.isNotEmpty)
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(Icons.location_on_outlined, 
+                                    color: Colors.grey, size: 16),
+                                  const SizedBox(width: 2),
+                                  Text(
+                                    _user.location,
+                                    style: const TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            if (_user.website.isNotEmpty)
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(Icons.link, 
+                                    color: Colors.grey, size: 16),
+                                  const SizedBox(width: 2),
+                                  Text(
+                                    _user.website,
+                                    style: const TextStyle(
+                                      color: Color(0xFF7941FF),
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(Icons.calendar_today, 
+                                  color: Colors.grey, size: 16),
+                                const SizedBox(width: 2),
+                                Text(
+                                  'Joined ${_user.joinDate}',
+                                  style: const TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            if (_user.userTag.isNotEmpty)
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: Color(0xFFE6DCFF),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  _user.userTag,
+                                  style: const TextStyle(
+                                    color: Color(0xFF7941FF),
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                      
+                      // Followers/Following count
+                      Padding(
+                        padding: const EdgeInsets.only(left: 20, right: 20, top: 15),
+                        child: Row(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                // TODO: Navigate to following screen
+                              },
+                              child: Row(
+                                children: [
+                                  Text(
+                                    '$following',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 5),
+                                  const Text(
+                                    'Following',
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 20),
+                            GestureDetector(
+                              onTap: () {
+                                // TODO: Navigate to followers screen
+                              },
+                              child: Row(
+                                children: [
+                                  Text(
+                                    '$followers',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 5),
+                                  const Text(
+                                    'Followers',
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Profile photo (negative margin to overlap with banner)
-                  Container(
-                    margin: const EdgeInsets.only(left: 20, top: -50),
+                
+                // Profile photo - positioned with top and left values instead of negative margin
+                Positioned(
+                  top: -50,
+                  left: 20,
+                  child: Container(
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.white, width: 4),
                       shape: BoxShape.circle,
@@ -196,240 +437,8 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                       backgroundImage: AssetImage(_user.profileImage),
                     ),
                   ),
-                  
-                  // Follow/Edit button 
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: Container(
-                      margin: const EdgeInsets.only(right: 20, top: 10),
-                      child: _isCurrentUser
-                        ? OutlinedButton(
-                            onPressed: _navigateToEditProfile,
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: Color(0xFF7941FF),
-                              side: BorderSide(color: Color(0xFF7941FF)),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                            ),
-                            child: const Text('Edit Profile'),
-                          )
-                        : ElevatedButton(
-                            onPressed: _toggleFollow,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: _isFollowing 
-                                ? Colors.white 
-                                : Color(0xFF7941FF),
-                              foregroundColor: _isFollowing 
-                                ? Color(0xFF7941FF) 
-                                : Colors.white,
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                                side: BorderSide(
-                                  color: Color(0xFF7941FF), 
-                                  width: 1,
-                                ),
-                              ),
-                            ),
-                            child: Text(_isFollowing ? 'Following' : 'Follow'),
-                          ),
-                    ),
-                  ),
-                  
-                  // Name, handle, verification badge
-                  Padding(
-                    padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
-                    child: Row(
-                      children: [
-                        Text(
-                          _user.displayName,
-                          style: const TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(width: 5),
-                        if (_user.isVerified)
-                          const Icon(
-                            Icons.verified,
-                            color: Color(0xFF7941FF),
-                            size: 20,
-                          ),
-                      ],
-                    ),
-                  ),
-                  
-                  // Handle and pronouns
-                  Padding(
-                    padding: const EdgeInsets.only(left: 20, right: 20),
-                    child: Row(
-                      children: [
-                        Text(
-                          _user.handle,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey,
-                          ),
-                        ),
-                        if (_user.pronouns.isNotEmpty) ...[
-                          const SizedBox(width: 5),
-                          Text(
-                            _user.pronouns,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                  
-                  // Bio
-                  if (_user.bio.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
-                      child: Text(
-                        _user.bio,
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                    ),
-                  
-                  // Location, website, and join date
-                  Padding(
-                    padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
-                    child: Wrap(
-                      spacing: 10,
-                      runSpacing: 5,
-                      children: [
-                        if (_user.location.isNotEmpty)
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.location_on_outlined, 
-                                color: Colors.grey, size: 16),
-                              const SizedBox(width: 2),
-                              Text(
-                                _user.location,
-                                style: const TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
-                        if (_user.website.isNotEmpty)
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.link, 
-                                color: Colors.grey, size: 16),
-                              const SizedBox(width: 2),
-                              Text(
-                                _user.website,
-                                style: const TextStyle(
-                                  color: Color(0xFF7941FF),
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(Icons.calendar_today, 
-                              color: Colors.grey, size: 16),
-                            const SizedBox(width: 2),
-                            Text(
-                              'Joined ${_user.joinDate}',
-                              style: const TextStyle(
-                                color: Colors.grey,
-                                fontSize: 14,
-                              ),
-                            ),
-                          ],
-                        ),
-                        if (_user.userTag.isNotEmpty)
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: Color(0xFFE6DCFF),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              _user.userTag,
-                              style: const TextStyle(
-                                color: Color(0xFF7941FF),
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                  
-                  // Followers/Following count
-                  Padding(
-                    padding: const EdgeInsets.only(left: 20, right: 20, top: 15),
-                    child: Row(
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            // TODO: Navigate to following screen
-                          },
-                          child: Row(
-                            children: [
-                              Text(
-                                '$following',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              const SizedBox(width: 5),
-                              const Text(
-                                'Following',
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 20),
-                        GestureDetector(
-                          onTap: () {
-                            // TODO: Navigate to followers screen
-                          },
-                          child: Row(
-                            children: [
-                              Text(
-                                '$followers',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              const SizedBox(width: 5),
-                              const Text(
-                                'Followers',
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
           
