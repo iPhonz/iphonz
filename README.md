@@ -9,11 +9,12 @@ A Flutter implementation of the SPILL social media app based on the provided des
 - Hashtag highlighting in posts with purple accent color
 - Post interactions (share, comment, like)
 - "Joined" and "Join" buttons for each post
-- Comment section for posts
+- Comment section for posts with threaded replies
 - Bottom navigation bar with home, notifications, create post, search, and profile
 - Purple accent colors throughout the UI
 - **Compose functionality** with 500 character limit and media attachments
 - **Notifications system** with filtering and approval actions
+- **Threaded comments** with support for replies, images, and likes
 
 ## Compose Screen Features
 
@@ -34,6 +35,17 @@ A Flutter implementation of the SPILL social media app based on the provided des
 - Post thumbnails for group posts
 - Badge counter on the notifications icon
 
+## Comments Screen Features
+
+- Dark theme with white text
+- Support for threaded comments and replies
+- Ability to include images in comments
+- Like functionality for comments (coffee cup icon)
+- Reply button for creating threaded conversations
+- Comment input field with user avatar
+- Display of like counts and timestamps
+- Seamless navigation from posts to comments
+
 ## Project Structure
 
 ```
@@ -41,18 +53,22 @@ spill_clone/
 ├── lib/
 │   ├── main.dart           # App entry point
 │   ├── models/             # Data models
-│   │   ├── post.dart           # Post and Comment models
+│   │   ├── post.dart           # Post model
+│   │   ├── comment.dart        # Comment model with threading support
 │   │   └── notification_item.dart  # Notification model
 │   ├── screens/            # App screens
-│   │   ├── home_screen.dart    # Main timeline screen
-│   │   ├── compose_screen.dart # Post creation screen
-│   │   └── notifications_screen.dart # Notifications screen
+│   │   ├── home_screen.dart        # Main timeline screen
+│   │   ├── compose_screen.dart     # Post creation screen
+│   │   ├── notifications_screen.dart # Notifications screen
+│   │   └── comments_screen.dart     # Comments and replies screen
 │   ├── services/           # Business logic
-│   │   ├── post_service.dart   # Post management service
+│   │   ├── post_service.dart       # Post management service
+│   │   ├── comment_service.dart    # Comment and reply management
 │   │   └── notification_service.dart # Notification management service
 │   ├── utils/              # Utilities and constants
 │   └── widgets/            # Reusable UI components
-│       ├── post_item.dart      # Post card widget
+│       ├── post_item.dart          # Post card widget
+│       ├── comment_item.dart       # Comment and reply widget
 │       └── notification_item_widget.dart # Notification widget
 ├── assets/                 # Images, fonts, etc.
 └── pubspec.yaml            # Project configuration
@@ -64,10 +80,11 @@ The app interface matches the provided design with:
 - Purple accent colors for buttons and hashtags
 - Light pink/purple gradient background
 - Meme images in posts
-- Comment sections
+- Comment sections with threaded replies
 - Modern engagement buttons
 - Compose screen with media attachment options
 - Notifications screen with filtering tabs and approval actions
+- Dark themed comments screen with threaded replies
 
 ## Getting Started
 
@@ -97,3 +114,6 @@ The app interface matches the provided design with:
 - View notifications by tapping the bell icon
 - Filter notifications by category using the tabs
 - Approve friend requests and group join requests
+- View and add comments by tapping the comment bubble icon on posts
+- Reply to comments by tapping the "Reply" button
+- Like comments by tapping the coffee cup icon
