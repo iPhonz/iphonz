@@ -4,9 +4,11 @@ import '../models/post.dart';
 import '../services/post_service.dart';
 import '../services/notification_service.dart';
 import '../services/user_service.dart';
+import '../services/group_service.dart';
 import 'compose_screen.dart';
 import 'notifications_screen.dart';
 import 'profile_screen.dart';
+import 'groups_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -20,6 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final PostService _postService = PostService();
   final NotificationService _notificationService = NotificationService();
   final UserService _userService = UserService(); // Add user service for profile
+  final GroupService _groupService = GroupService(); // Add group service
   late List<Post> _posts;
   
   @override
@@ -67,11 +70,23 @@ class _HomeScreenState extends State<HomeScreen> {
       MaterialPageRoute(builder: (context) => const ProfileScreen()),
     );
   }
+  
+  // Method to navigate to groups screen
+  void _navigateToGroupsScreen() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const GroupsScreen()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     // Get unread notifications count
     final unreadCount = _notificationService.getUnreadCount();
+    
+    // Get unread group spills count
+    final unreadGroupsCount = _groupService.getJoinedGroups()
+        .fold(0, (sum, group) => sum + group.newSpillsCount);
     
     return Scaffold(
       // Use a gradient background color
@@ -92,6 +107,41 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(
             icon: const Icon(Icons.search, color: Colors.black),
             onPressed: () {},
+          ),
+          // Groups icon
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.group, color: Colors.black),
+                onPressed: _navigateToGroupsScreen,
+              ),
+              if (unreadGroupsCount > 0)
+                Positioned(
+                  right: 8,
+                  top: 8,
+                  child: Container(
+                    padding: const EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    constraints: const BoxConstraints(
+                      minWidth: 18,
+                      minHeight: 18,
+                    ),
+                    child: Text(
+                      unreadGroupsCount > 9 ? '9+' : '$unreadGroupsCount',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+            ],
           ),
         ],
       ),
@@ -139,6 +189,9 @@ class _HomeScreenState extends State<HomeScreen> {
               } else if (index == 4) {
                 // Navigate to profile screen when the profile icon is tapped
                 _navigateToProfileScreen();
+              } else if (index == 1) {
+                // Navigate to groups screen when the groups icon is tapped
+                _navigateToGroupsScreen();
               } else {
                 _selectedIndex = index;
               }
@@ -151,9 +204,9 @@ class _HomeScreenState extends State<HomeScreen> {
               label: 'Home',
             ),
             const BottomNavigationBarItem(
-              icon: Icon(Icons.people_outline),
-              activeIcon: Icon(Icons.people),
-              label: 'Friends',
+              icon: Icon(Icons.group_outlined),
+              activeIcon: Icon(Icons.group),
+              label: 'Groups',
             ),
             BottomNavigationBarItem(
               icon: Container(
