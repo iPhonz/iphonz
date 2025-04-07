@@ -10,6 +10,9 @@ class UserService extends ChangeNotifier {
   // Current user
   late User _currentUser;
   
+  // Map to track following relationships (userId -> isFollowing)
+  final Map<String, bool> _followingRelationships = {};
+  
   // Mock user data
   final Map<String, User> _users = {
     'user1': User(
@@ -62,6 +65,10 @@ class UserService extends ChangeNotifier {
   // Initialize with current user
   void init() {
     _currentUser = _users['user1']!;
+    
+    // Initialize following relationships
+    _followingRelationships['user2'] = true; // Assume current user follows user2
+    _followingRelationships['user3'] = false; // Assume current user doesn't follow user3
   }
 
   // Get current user
@@ -70,6 +77,11 @@ class UserService extends ChangeNotifier {
   // Get a user by ID
   User? getUserById(String userId) {
     return _users[userId];
+  }
+
+  // Check if current user is following another user
+  bool isFollowing(String userId) {
+    return _followingRelationships[userId] ?? false;
   }
 
   // Get user's followers (mock implementation)
@@ -103,6 +115,9 @@ class UserService extends ChangeNotifier {
       // Update the current user in the map
       _users[_currentUser.id] = _currentUser;
       
+      // Update following relationship
+      _followingRelationships[userId] = true;
+      
       notifyListeners();
     }
   }
@@ -127,6 +142,9 @@ class UserService extends ChangeNotifier {
       
       // Update the current user in the map
       _users[_currentUser.id] = _currentUser;
+      
+      // Update following relationship
+      _followingRelationships[userId] = false;
       
       notifyListeners();
     }
