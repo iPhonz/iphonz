@@ -49,7 +49,7 @@ class SpillApp extends StatelessWidget {
         title: 'SPILL',
         theme: ThemeData(
           primaryColor: Colors.black,
-          scaffoldBackgroundColor: Color(0xFFF8E4E8), // Light pink background
+          scaffoldBackgroundColor: const Color(0xFFF8E4E8), // Light pink background
           fontFamily: 'Inter',
           appBarTheme: const AppBarTheme(
             backgroundColor: Colors.transparent,
@@ -57,7 +57,7 @@ class SpillApp extends StatelessWidget {
           ),
           colorScheme: ColorScheme.light(
             primary: Colors.black,
-            secondary: Color(0xFF7941FF), // Purple accent color for buttons
+            secondary: const Color(0xFF7941FF), // Purple accent color for buttons
           ),
         ),
         home: const MainScreen(),
@@ -82,12 +82,15 @@ class _MainScreenState extends State<MainScreen> {
     final userService = Provider.of<UserService>(context);
     final messagingService = Provider.of<MessagingService>(context);
     
+    // Get the current user ID
+    final currentUserId = userService.getCurrentUserId() ?? '';
+    
     return Scaffold(
       body: IndexedStack(
         index: _selectedIndex,
         children: [
           // Home screen
-          const HomeScreen(),
+          HomeScreen(userId: currentUserId),
           
           // Groups screen
           const GroupsScreen(),
@@ -99,7 +102,7 @@ class _MainScreenState extends State<MainScreen> {
           const NotificationsScreen(),
           
           // Profile screen
-          ProfileScreen(userId: userService.getCurrentUserId() ?? ''),
+          ProfileScreen(userId: currentUserId),
           
           // Messages screen (added)
           ConversationsScreen(
