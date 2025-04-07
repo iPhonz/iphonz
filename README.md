@@ -4,10 +4,14 @@ A Flutter implementation of the SPILL social media app based on the provided des
 
 ## Features
 
-- Timeline feed showing posts from users
-- Post interaction buttons (share, repost, comment, like)
+- Light pink gradient background with modern UI
+- Timeline feed showing posts from users with meme images
+- Hashtag highlighting in posts with purple accent color
+- Post interactions (share, comment, like)
+- "Joined" and "Join" buttons for each post
+- Comment section for posts
 - Bottom navigation bar with home, notifications, create post, search, and profile
-- Clean, minimalist UI matching the provided design
+- Purple accent colors throughout the UI
 
 ## Project Structure
 
@@ -22,6 +26,15 @@ spill_clone/
 ├── assets/                 # Images, fonts, etc.
 └── pubspec.yaml            # Project configuration
 ```
+
+## Screenshots
+
+The app interface matches the provided design with:
+- Purple accent colors for buttons and hashtags
+- Light pink background
+- Meme images in posts
+- Comment sections
+- Modern engagement buttons
 
 ## Getting Started
 
