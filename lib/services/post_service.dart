@@ -1,4 +1,6 @@
+import 'dart:math';
 import '../models/post.dart';
+import '../models/comment.dart';
 
 class PostService {
   // Singleton pattern
@@ -6,27 +8,32 @@ class PostService {
   factory PostService() => _instance;
   PostService._internal();
 
+  // Random generator for IDs
+  final Random _random = Random();
+
+  // Generate a random ID
+  String _generateId() {
+    return 'post_${DateTime.now().millisecondsSinceEpoch}_${_random.nextInt(1000)}';
+  }
+
   // In-memory posts storage
   final List<Post> _posts = [
     Post(
+      id: 'post_1',
       username: 'wanderlust_gypsy',
       profileImage: 'assets/images/profile1.jpg',
       content: "Me: 'I'm going to bed #earlytonight.' Also me at 3 AM: watching a raccoon wash grapes in slow motion",
       memeImage: 'assets/images/thinking_meme.jpg',
       likes: 16,
       comments: 0,
-      shares: 0,
+      shares: 4,
       tagline: 'All we do is skaaaate',
       hasJoined: true,
-      commentsList: [
-        Comment(
-          username: 'mendacious_ninja_0',
-          profileImage: 'assets/images/profile3.jpg',
-          content: "One thing about Black folks: we gon't laugh through the...",
-        ),
-      ],
+      commentsList: [],
+      timestamp: DateTime.now().subtract(const Duration(hours: 2)),
     ),
     Post(
+      id: 'post_2',
       username: 'wanderlust_gypsy',
       profileImage: 'assets/images/profile1.jpg',
       content: 'Sometimes it just makes more sense to just rest. #inmybag #skateboarding',
@@ -35,6 +42,7 @@ class PostService {
       shares: 0,
       tagline: 'All we do is skaaaate',
       hasJoined: false,
+      timestamp: DateTime.now().subtract(const Duration(hours: 4)),
     ),
   ];
 
@@ -63,6 +71,15 @@ class PostService {
     return List.unmodifiable(_posts);
   }
 
+  // Get a post by ID
+  Post? getPostById(String id) {
+    try {
+      return _posts.firstWhere((post) => post.id == id);
+    } catch (e) {
+      return null;
+    }
+  }
+
   // Create a new post
   void createPost({
     required String username,
@@ -72,6 +89,7 @@ class PostService {
     String? tagline,
   }) {
     final newPost = Post(
+      id: _generateId(),
       username: username,
       profileImage: profileImage,
       content: content,
@@ -82,6 +100,7 @@ class PostService {
       tagline: tagline ?? 'All we do is skaaaate',
       hasJoined: true,
       commentsList: [],
+      timestamp: DateTime.now(),
     );
 
     // Add to the beginning of the list
@@ -95,17 +114,21 @@ class PostService {
   void likePost(int index) {
     if (index >= 0 && index < _posts.length) {
       final post = _posts[index];
-      final updatedPost = Post(
-        username: post.username,
-        profileImage: post.profileImage,
-        content: post.content,
-        memeImage: post.memeImage,
+      final updatedPost = post.copyWith(
         likes: post.likes + 1,
-        comments: post.comments,
-        shares: post.shares,
-        tagline: post.tagline,
-        hasJoined: post.hasJoined,
-        commentsList: post.commentsList,
+      );
+      
+      _posts[index] = updatedPost;
+      _notifyListeners();
+    }
+  }
+
+  // Share a post
+  void sharePost(int index) {
+    if (index >= 0 && index < _posts.length) {
+      final post = _posts[index];
+      final updatedPost = post.copyWith(
+        shares: post.shares + 1,
       );
       
       _posts[index] = updatedPost;
@@ -119,16 +142,8 @@ class PostService {
       final post = _posts[postIndex];
       final newCommentsList = List<Comment>.from(post.commentsList)..add(comment);
       
-      final updatedPost = Post(
-        username: post.username,
-        profileImage: post.profileImage,
-        content: post.content,
-        memeImage: post.memeImage,
-        likes: post.likes,
+      final updatedPost = post.copyWith(
         comments: post.comments + 1,
-        shares: post.shares,
-        tagline: post.tagline,
-        hasJoined: post.hasJoined,
         commentsList: newCommentsList,
       );
       
@@ -141,17 +156,8 @@ class PostService {
   void toggleJoin(int index) {
     if (index >= 0 && index < _posts.length) {
       final post = _posts[index];
-      final updatedPost = Post(
-        username: post.username,
-        profileImage: post.profileImage,
-        content: post.content,
-        memeImage: post.memeImage,
-        likes: post.likes,
-        comments: post.comments,
-        shares: post.shares,
-        tagline: post.tagline,
+      final updatedPost = post.copyWith(
         hasJoined: !post.hasJoined,
-        commentsList: post.commentsList,
       );
       
       _posts[index] = updatedPost;
