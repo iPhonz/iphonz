@@ -11,7 +11,9 @@ import 'profile_screen.dart';
 import 'groups_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  final String? userId;
+  
+  const HomeScreen({Key? key, this.userId}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -65,9 +67,10 @@ class _HomeScreenState extends State<HomeScreen> {
   
   // Method to navigate to profile screen
   void _navigateToProfileScreen() {
+    final currentUserId = _userService.getCurrentUserId() ?? '';
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const ProfileScreen()),
+      MaterialPageRoute(builder: (context) => ProfileScreen(userId: currentUserId)),
     );
   }
   
