@@ -2,44 +2,68 @@ class User {
   final String id;
   final String username;
   final String displayName;
+  final String profileImage;
+  final String? bio;
+  final int followers;
+  final int following;
+  final bool isVerified;
+  final DateTime? joinDate;
+  
+  // Additional properties
   final String handle;
   final String pronouns;
   final String location;
   final String website;
-  final String bio;
-  final String profileImage;
   final String bannerImage;
   final List<String> interests;
-  final List<String> followers;
-  final List<String> following;
   final List<String> postIds;
   final List<String> groups;
-  final bool isVerified;
-  final String joinDate;
   final String userTag;
   final bool allowsMessages;
+
+  // Getter for compatibility with posts that expect 'name'
+  String get name => displayName;
 
   User({
     required this.id,
     required this.username,
     required this.displayName,
-    required this.handle,
+    required this.profileImage,
+    this.bio,
+    required this.followers,
+    required this.following,
+    this.isVerified = false,
+    this.joinDate,
+    this.handle = '',
     this.pronouns = '',
     this.location = '',
     this.website = '',
-    this.bio = '',
-    required this.profileImage,
     this.bannerImage = '',
     this.interests = const [],
-    this.followers = const [],
-    this.following = const [],
     this.postIds = const [],
     this.groups = const [],
-    this.isVerified = false,
-    required this.joinDate,
     this.userTag = '',
     this.allowsMessages = true,
   });
+
+  // Simplified constructor for basic user creation
+  factory User.basic({
+    required String id,
+    required String username,
+    required String name,
+    required String profileImage,
+    String? bio,
+  }) {
+    return User(
+      id: id,
+      username: username,
+      displayName: name,
+      profileImage: profileImage,
+      bio: bio,
+      followers: 0,
+      following: 0,
+    );
+  }
 
   // Create a copy of the user with updated fields
   User copyWith({
@@ -59,7 +83,7 @@ class User {
     List<String>? postIds,
     List<String>? groups,
     bool? isVerified,
-    String? joinDate,
+    DateTime? joinDate,
     String? userTag,
     bool? allowsMessages,
   }) {
@@ -75,8 +99,8 @@ class User {
       profileImage: profileImage ?? this.profileImage,
       bannerImage: bannerImage ?? this.bannerImage,
       interests: interests ?? this.interests,
-      followers: followers ?? this.followers,
-      following: following ?? this.following,
+      followers: followers != null ? List<String>.from(followers) : this.followers,
+      following: following != null ? List<String>.from(following) : this.following,
       postIds: postIds ?? this.postIds,
       groups: groups ?? this.groups,
       isVerified: isVerified ?? this.isVerified,
@@ -105,7 +129,7 @@ class User {
       'postIds': postIds,
       'groups': groups,
       'isVerified': isVerified,
-      'joinDate': joinDate,
+      'joinDate': joinDate?.toIso8601String(),
       'userTag': userTag,
       'allowsMessages': allowsMessages,
     };
@@ -117,20 +141,20 @@ class User {
       id: map['id'],
       username: map['username'],
       displayName: map['displayName'],
-      handle: map['handle'],
+      handle: map['handle'] ?? '',
       pronouns: map['pronouns'] ?? '',
       location: map['location'] ?? '',
       website: map['website'] ?? '',
-      bio: map['bio'] ?? '',
+      bio: map['bio'],
       profileImage: map['profileImage'],
       bannerImage: map['bannerImage'] ?? '',
       interests: List<String>.from(map['interests'] ?? []),
-      followers: List<String>.from(map['followers'] ?? []),
-      following: List<String>.from(map['following'] ?? []),
+      followers: map['followers'] is int ? map['followers'] : 0,
+      following: map['following'] is int ? map['following'] : 0,
       postIds: List<String>.from(map['postIds'] ?? []),
       groups: List<String>.from(map['groups'] ?? []),
       isVerified: map['isVerified'] ?? false,
-      joinDate: map['joinDate'],
+      joinDate: map['joinDate'] != null ? DateTime.parse(map['joinDate']) : null,
       userTag: map['userTag'] ?? '',
       allowsMessages: map['allowsMessages'] ?? true,
     );
