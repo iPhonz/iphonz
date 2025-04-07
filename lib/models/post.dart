@@ -1,61 +1,101 @@
 import 'comment.dart';
+import 'user.dart';
 
 class Post {
   final String id;
-  final String username;
-  final String profileImage;
+  final User user;
   final String content;
-  final String? memeImage; // Optional meme image
+  final String? imageUrl; // Image for the post
   final int likes;
   final int comments;
   final int shares;
-  final String? tagline; // "All we do is skaaaate"
   final List<Comment> commentsList; // List of comments
-  final bool hasJoined; // Whether the user has joined
+  final bool? isJoined; // Whether the user has joined (optional)
   final DateTime timestamp;
+
+  // Legacy properties (maintain backward compatibility)
+  String get username => user.name;
+  String get profileImage => user.profileImage;
+  String? get memeImage => imageUrl;
+  String? get tagline => user.bio;
+  bool get hasJoined => isJoined ?? false;
 
   Post({
     required this.id,
-    required this.username,
-    required this.profileImage,
+    required this.user,
     required this.content,
-    this.memeImage,
+    this.imageUrl,
     required this.likes,
     required this.comments,
-    required this.shares,
-    this.tagline,
+    this.shares = 0,
     this.commentsList = const [],
-    this.hasJoined = false,
+    this.isJoined,
     DateTime? timestamp,
   }) : this.timestamp = timestamp ?? DateTime.now();
+
+  // Constructor to maintain backward compatibility
+  factory Post.legacy({
+    required String id,
+    required String username,
+    required String profileImage,
+    required String content,
+    String? memeImage,
+    required int likes,
+    required int comments,
+    int shares = 0,
+    String? tagline,
+    List<Comment> commentsList = const [],
+    bool hasJoined = false,
+    DateTime? timestamp,
+  }) {
+    // Create a basic user 
+    final user = User(
+      id: 'user_$id', // Generate a user ID based on post ID
+      username: username.toLowerCase().replaceAll(' ', '_'),
+      name: username,
+      profileImage: profileImage,
+      bio: tagline,
+      followers: 0,
+      following: 0,
+    );
+
+    return Post(
+      id: id, 
+      user: user,
+      content: content,
+      imageUrl: memeImage,
+      likes: likes,
+      comments: comments,
+      shares: shares,
+      commentsList: commentsList,
+      isJoined: hasJoined,
+      timestamp: timestamp,
+    );
+  }
 
   // Create a copy of this post with updated values
   Post copyWith({
     String? id,
-    String? username,
-    String? profileImage,
+    User? user,
     String? content,
-    String? memeImage,
+    String? imageUrl,
     int? likes,
     int? comments,
     int? shares,
-    String? tagline,
     List<Comment>? commentsList,
-    bool? hasJoined,
+    bool? isJoined,
     DateTime? timestamp,
   }) {
     return Post(
       id: id ?? this.id,
-      username: username ?? this.username,
-      profileImage: profileImage ?? this.profileImage,
+      user: user ?? this.user,
       content: content ?? this.content,
-      memeImage: memeImage ?? this.memeImage,
+      imageUrl: imageUrl ?? this.imageUrl,
       likes: likes ?? this.likes,
       comments: comments ?? this.comments,
       shares: shares ?? this.shares,
-      tagline: tagline ?? this.tagline,
       commentsList: commentsList ?? this.commentsList,
-      hasJoined: hasJoined ?? this.hasJoined,
+      isJoined: isJoined ?? this.isJoined,
       timestamp: timestamp ?? this.timestamp,
     );
   }
