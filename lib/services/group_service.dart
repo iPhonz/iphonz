@@ -133,38 +133,26 @@ class GroupService with ChangeNotifier {
   void _initGroups() {
     // Sample users for groups
     final users = [
-      User(
+      User.basic(
         id: '1',
         username: 'j_smith',
         name: 'James Smith',
-        bio: 'Coffee enthusiast, meme lover ☕',
         profileImage: 'assets/images/avatars/avatar1.png',
-        followers: 1240,
-        following: 420,
-        isVerified: true,
-        joinDate: DateTime(2023, 5, 12),
+        bio: 'Coffee enthusiast, meme lover ☕',
       ),
-      User(
+      User.basic(
         id: '2',
         username: 'maria_g',
         name: 'Maria Garcia',
-        bio: 'Travel junkie | Food critic',
         profileImage: 'assets/images/avatars/avatar2.png',
-        followers: 3500,
-        following: 750,
-        isVerified: false,
-        joinDate: DateTime(2023, 3, 25),
+        bio: 'Travel junkie | Food critic',
       ),
-      User(
+      User.basic(
         id: '3',
         username: 'tech_dave',
         name: 'David Chen',
-        bio: 'Tech enthusiast and gadget reviewer',
         profileImage: 'assets/images/avatars/avatar3.png',
-        followers: 5200,
-        following: 310,
-        isVerified: true,
-        joinDate: DateTime(2023, 1, 8),
+        bio: 'Tech enthusiast and gadget reviewer',
       ),
     ];
 
