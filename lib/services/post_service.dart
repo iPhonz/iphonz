@@ -22,7 +22,7 @@ class PostService {
         Comment(
           username: 'mendacious_ninja_0',
           profileImage: 'assets/images/profile3.jpg',
-          content: 'One thing about Black folks: we gon' laugh through the...',
+          content: "One thing about Black folks: we gon't laugh through the...",
         ),
       ],
     ),
