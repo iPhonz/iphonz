@@ -15,6 +15,7 @@ A Flutter implementation of the SPILL social media app based on the provided des
 - **Compose functionality** with 500 character limit and media attachments
 - **Notifications system** with filtering and approval actions
 - **Threaded comments** with support for replies, images, and likes
+- **User profiles** with full customization, follows, and post history
 
 ## Compose Screen Features
 
@@ -46,6 +47,29 @@ A Flutter implementation of the SPILL social media app based on the provided des
 - Display of like counts and timestamps
 - Seamless navigation from posts to comments
 
+## Profile Screen Features
+
+- User profile with banner image and avatar
+- Bio, location, website, and pronouns display
+- Follow/unfollow functionality
+- Following and followers counts
+- Join date and user verification badge
+- "Edit Profile" button for current user
+- Tabbed interface for Posts, Media, and Likes
+- Purple accents matching app theme
+- Interest tags display
+- Direct message option (if enabled by user)
+
+## Edit Profile Screen Features
+
+- Customizable profile picture and banner image
+- Editable name, handle, bio, and location fields
+- Pronoun selection
+- Website input
+- Interest selection with toggle chips
+- Privacy settings for direct messages
+- Account options for password and email changes
+
 ## Project Structure
 
 ```
@@ -55,16 +79,20 @@ spill_clone/
 │   ├── models/             # Data models
 │   │   ├── post.dart           # Post model
 │   │   ├── comment.dart        # Comment model with threading support
-│   │   └── notification_item.dart  # Notification model
+│   │   ├── notification_item.dart  # Notification model
+│   │   └── user.dart           # User profile model
 │   ├── screens/            # App screens
 │   │   ├── home_screen.dart        # Main timeline screen
 │   │   ├── compose_screen.dart     # Post creation screen
 │   │   ├── notifications_screen.dart # Notifications screen
-│   │   └── comments_screen.dart     # Comments and replies screen
+│   │   ├── comments_screen.dart     # Comments and replies screen
+│   │   ├── profile_screen.dart      # User profile screen
+│   │   └── edit_profile_screen.dart # Profile editing screen
 │   ├── services/           # Business logic
 │   │   ├── post_service.dart       # Post management service
 │   │   ├── comment_service.dart    # Comment and reply management
-│   │   └── notification_service.dart # Notification management service
+│   │   ├── notification_service.dart # Notification management service
+│   │   └── user_service.dart       # User profile management
 │   ├── utils/              # Utilities and constants
 │   └── widgets/            # Reusable UI components
 │       ├── post_item.dart          # Post card widget
@@ -85,6 +113,7 @@ The app interface matches the provided design with:
 - Compose screen with media attachment options
 - Notifications screen with filtering tabs and approval actions
 - Dark themed comments screen with threaded replies
+- User profiles with customizable information and social interactions
 
 ## Getting Started
 
@@ -117,3 +146,7 @@ The app interface matches the provided design with:
 - View and add comments by tapping the comment bubble icon on posts
 - Reply to comments by tapping the "Reply" button
 - Like comments by tapping the coffee cup icon
+- View user profiles by tapping the profile icon in bottom navigation
+- Follow/unfollow users from their profile pages
+- Edit your profile by tapping the "Edit Profile" button
+- Customize your profile information including bio, location, and interests
