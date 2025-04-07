@@ -131,7 +131,7 @@ class GroupService with ChangeNotifier {
   }
 
   void _initGroups() {
-    // Sample users for groups
+    // Sample users for groups using the new User.basic constructor
     final users = [
       User.basic(
         id: '1',
