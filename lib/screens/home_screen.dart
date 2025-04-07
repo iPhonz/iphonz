@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../widgets/post_item.dart';
 import '../models/post.dart';
+import 'compose_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -43,6 +44,14 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   int _selectedIndex = 0;
+
+  // Method to navigate to compose screen
+  void _navigateToComposeScreen() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const ComposeScreen()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +108,12 @@ class _HomeScreenState extends State<HomeScreen> {
           elevation: 0,
           onTap: (index) {
             setState(() {
-              _selectedIndex = index;
+              if (index == 2) {
+                // Navigate to compose screen when the center "+" button is tapped
+                _navigateToComposeScreen();
+              } else {
+                _selectedIndex = index;
+              }
             });
           },
           items: [
