@@ -3,8 +3,10 @@ import '../widgets/post_item.dart';
 import '../models/post.dart';
 import '../services/post_service.dart';
 import '../services/notification_service.dart';
+import '../services/user_service.dart';
 import 'compose_screen.dart';
 import 'notifications_screen.dart';
+import 'profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -17,6 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
   final PostService _postService = PostService();
   final NotificationService _notificationService = NotificationService();
+  final UserService _userService = UserService(); // Add user service for profile
   late List<Post> _posts;
   
   @override
@@ -24,6 +27,9 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _posts = _postService.getPosts();
     _postService.addListener(_refreshPosts);
+    
+    // Initialize user service
+    _userService.init();
   }
 
   @override
@@ -51,6 +57,14 @@ class _HomeScreenState extends State<HomeScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const NotificationsScreen()),
+    );
+  }
+  
+  // Method to navigate to profile screen
+  void _navigateToProfileScreen() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const ProfileScreen()),
     );
   }
 
@@ -122,6 +136,9 @@ class _HomeScreenState extends State<HomeScreen> {
               } else if (index == 3) {
                 // Navigate to notifications screen when the notifications icon is tapped
                 _navigateToNotificationsScreen();
+              } else if (index == 4) {
+                // Navigate to profile screen when the profile icon is tapped
+                _navigateToProfileScreen();
               } else {
                 _selectedIndex = index;
               }
@@ -178,7 +195,7 @@ class _HomeScreenState extends State<HomeScreen> {
             BottomNavigationBarItem(
               icon: CircleAvatar(
                 radius: 15,
-                backgroundImage: AssetImage('assets/images/user_profile.jpg'),
+                backgroundImage: AssetImage(_userService.currentUser.profileImage),
               ),
               label: 'Profile',
             ),
