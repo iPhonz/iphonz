@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../services/post_service.dart';
+import '../services/group_service.dart';
+import '../services/user_service.dart';
 import '../models/post.dart';
+import '../models/group.dart';
 
 class ComposeScreen extends StatefulWidget {
-  const ComposeScreen({Key? key}) : super(key: key);
+  final String? groupId; // Optional group ID if composing directly for a group
+
+  const ComposeScreen({Key? key, this.groupId}) : super(key: key);
 
   @override
   State<ComposeScreen> createState() => _ComposeScreenState();
@@ -13,9 +18,11 @@ class ComposeScreen extends StatefulWidget {
 class _ComposeScreenState extends State<ComposeScreen> {
   final TextEditingController _textController = TextEditingController();
   final int _maxChars = 500;
-  String _selectedGroup = 'Yoga On Mondays';
+  Group? _selectedGroup;
   bool _canPost = false;
   final PostService _postService = PostService();
+  final GroupService _groupService = GroupService();
+  final UserService _userService = UserService();
   
   // Selected media
   String? _selectedMedia;
@@ -24,6 +31,11 @@ class _ComposeScreenState extends State<ComposeScreen> {
   void initState() {
     super.initState();
     _textController.addListener(_updatePostButton);
+    
+    // If a group ID was provided, set it as the selected group
+    if (widget.groupId != null) {
+      _selectedGroup = _groupService.getGroupById(widget.groupId!);
+    }
   }
 
   @override
@@ -41,13 +53,31 @@ class _ComposeScreenState extends State<ComposeScreen> {
   // Handle post creation
   void _createPost() {
     if (_canPost) {
+      final Post newPost = Post(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        user: _userService.currentUser,
+        content: _textController.text,
+        imageUrl: _selectedMedia,
+        timestamp: DateTime.now(),
+        likes: 0,
+        comments: 0,
+        isJoined: false,
+      );
+      
+      // Add post to the selected group if one is selected
+      if (_selectedGroup != null) {
+        _groupService.addPostToGroup(_selectedGroup!.id, newPost);
+      }
+      
+      // Add post to the main feed
       _postService.createPost(
-        username: 'Yoga On Mondays',
-        profileImage: 'assets/images/profile1.jpg',
+        username: _userService.currentUser.username,
+        profileImage: _userService.currentUser.profileImage,
         content: _textController.text,
         memeImage: _selectedMedia,
-        tagline: 'All we do is skaaaate',
+        tagline: '',
       );
+      
       Navigator.pop(context);
     }
   }
@@ -124,6 +154,69 @@ class _ComposeScreenState extends State<ComposeScreen> {
     }
   }
 
+  void _showGroupSelectionDialog() {
+    // Get joined groups for selection
+    final joinedGroups = _groupService.getJoinedGroups();
+    
+    if (joinedGroups.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('You haven\'t joined any groups yet'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Select Group'),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: joinedGroups.length,
+            itemBuilder: (context, index) {
+              final group = joinedGroups[index];
+              return ListTile(
+                leading: CircleAvatar(
+                  backgroundImage: AssetImage(group.groupImage),
+                ),
+                title: Text(group.name),
+                subtitle: Text('${group.memberCount} members'),
+                selected: _selectedGroup?.id == group.id,
+                onTap: () {
+                  setState(() {
+                    _selectedGroup = group;
+                  });
+                  Navigator.pop(context);
+                },
+              );
+            },
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              setState(() {
+                _selectedGroup = null;
+              });
+              Navigator.pop(context);
+            },
+            child: const Text('Post to My Profile'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text('Cancel'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // Get remaining character count
@@ -197,56 +290,20 @@ class _ComposeScreenState extends State<ComposeScreen> {
                 ),
                 child: ListTile(
                   leading: CircleAvatar(
-                    backgroundImage: AssetImage('assets/images/profile1.jpg'),
+                    backgroundImage: _selectedGroup != null
+                        ? AssetImage(_selectedGroup!.groupImage)
+                        : AssetImage(_userService.currentUser.profileImage),
                   ),
                   title: Text(
-                    _selectedGroup,
+                    _selectedGroup != null
+                        ? _selectedGroup!.name
+                        : 'Post to My Profile',
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   trailing: const Icon(Icons.keyboard_arrow_down),
-                  onTap: () {
-                    // Show a dialog to select a group
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: const Text('Select Group'),
-                        content: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            ListTile(
-                              title: const Text('Yoga On Mondays'),
-                              onTap: () {
-                                setState(() {
-                                  _selectedGroup = 'Yoga On Mondays';
-                                });
-                                Navigator.pop(context);
-                              },
-                            ),
-                            ListTile(
-                              title: const Text('Tech Enthusiasts'),
-                              onTap: () {
-                                setState(() {
-                                  _selectedGroup = 'Tech Enthusiasts';
-                                });
-                                Navigator.pop(context);
-                              },
-                            ),
-                            ListTile(
-                              title: const Text('Travel Addicts'),
-                              onTap: () {
-                                setState(() {
-                                  _selectedGroup = 'Travel Addicts';
-                                });
-                                Navigator.pop(context);
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
+                  onTap: _showGroupSelectionDialog,
                 ),
               ),
               
