@@ -18,28 +18,24 @@ class PostService {
   }
 
   // Sample users
-  final User _user1 = User(
+  final User _user1 = User.basic(
     id: 'user_1',
     username: 'wanderlust_gypsy',
     name: 'Wanderlust Gypsy',
     profileImage: 'assets/images/profile1.jpg',
     bio: 'All we do is skaaaate',
-    followers: 1240,
-    following: 420,
   );
 
   // In-memory posts storage
   final List<Post> _posts = [
     Post(
       id: 'post_1',
-      user: User(
+      user: User.basic(
         id: 'user_1',
         username: 'wanderlust_gypsy',
         name: 'Wanderlust Gypsy',
         profileImage: 'assets/images/profile1.jpg',
         bio: 'All we do is skaaaate',
-        followers: 1240,
-        following: 420,
       ),
       content: "Me: 'I'm going to bed #earlytonight.' Also me at 3 AM: watching a raccoon wash grapes in slow motion",
       imageUrl: 'assets/images/thinking_meme.jpg',
@@ -52,14 +48,12 @@ class PostService {
     ),
     Post(
       id: 'post_2',
-      user: User(
+      user: User.basic(
         id: 'user_1',
         username: 'wanderlust_gypsy',
         name: 'Wanderlust Gypsy',
         profileImage: 'assets/images/profile1.jpg',
         bio: 'All we do is skaaaate',
-        followers: 1240,
-        following: 420,
       ),
       content: 'Sometimes it just makes more sense to just rest. #inmybag #skateboarding',
       likes: 16,
@@ -113,14 +107,12 @@ class PostService {
     String? tagline,
   }) {
     // Create or reuse a user
-    final user = User(
+    final user = User.basic(
       id: 'user_$username',
       username: username.toLowerCase().replaceAll(' ', '_'),
       name: username,
       profileImage: profileImage,
       bio: tagline ?? 'All we do is skaaaate',
-      followers: 0,
-      following: 0,
     );
 
     final newPost = Post(
