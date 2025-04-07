@@ -4,6 +4,7 @@ import '../services/user_service.dart';
 import '../services/post_service.dart';
 import '../widgets/post_item.dart';
 import '../models/post.dart';
+import 'edit_profile_screen.dart';
 import 'dart:ui';
 
 class ProfileScreen extends StatefulWidget {
@@ -86,10 +87,13 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
   }
 
   void _navigateToEditProfile() {
-    // TODO: Implement edit profile screen
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Edit profile not implemented yet'))
-    );
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const EditProfileScreen()),
+    ).then((_) {
+      // Refresh user data when returning from edit profile
+      setState(() {});
+    });
   }
 
   @override
