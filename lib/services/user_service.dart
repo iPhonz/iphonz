@@ -5,7 +5,10 @@ class UserService extends ChangeNotifier {
   // Singleton pattern for user service
   static final UserService _instance = UserService._internal();
   factory UserService() => _instance;
-  UserService._internal();
+  UserService._internal() {
+    // Initialize with current user
+    init();
+  }
 
   // Current user
   late User _currentUser;
@@ -34,7 +37,7 @@ class UserService extends ChangeNotifier {
       isVerified: false,
       joinDate: DateTime(2023, 4, 15),
       userTag: '',
-      allowsMessages: false,
+      allowsMessages: true,
     ),
     'user2': User(
       id: 'user2',
@@ -47,6 +50,7 @@ class UserService extends ChangeNotifier {
       handle: '@keelyjones',
       joinDate: DateTime(2024, 1, 7),
       postIds: ['post2', 'post4'],
+      allowsMessages: true,
     ),
     'user3': User(
       id: 'user3',
@@ -59,6 +63,7 @@ class UserService extends ChangeNotifier {
       handle: '@marcusd',
       joinDate: DateTime(2024, 2, 12),
       isVerified: true,
+      allowsMessages: true,
     ),
   };
 
@@ -73,6 +78,17 @@ class UserService extends ChangeNotifier {
 
   // Get current user
   User get currentUser => _currentUser;
+  
+  // Get current user ID - added for messaging feature
+  String? getCurrentUserId() {
+    return _currentUser.id;
+  }
+  
+  // Get all users - added for messaging feature
+  Future<List<User>> getAllUsers() async {
+    // In a real app, you'd fetch from a server or database
+    return _users.values.toList();
+  }
 
   // Get a user by ID
   User? getUserById(String userId) {
