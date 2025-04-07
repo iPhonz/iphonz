@@ -17,6 +17,7 @@ A Flutter implementation of the SPILL social media app based on the provided des
 - **Threaded comments** with support for replies, images, and likes
 - **User profiles** with full customization, follows, and post history
 - **Groups functionality** with categories, joined groups, and group posts
+- **Direct messaging** with real-time updates, media attachments, and read receipts
 
 ## UI Improvements
 
@@ -67,6 +68,19 @@ A Flutter implementation of the SPILL social media app based on the provided des
 - Interest tags display
 - Direct message option (if enabled by user)
 
+## Direct Messaging Features
+
+- Conversations list with preview of last message
+- Real-time message updates
+- Read receipts and typing indicators
+- Unread message badges
+- Image attachment support
+- Purple accent colors matching the app theme
+- User search to start new conversations
+- Relative timestamps for messages
+- User privacy settings to control who can message them
+- Seamless navigation between conversations
+
 ## Groups Screen Features
 
 - "My Groups" and "Explore Groups" tabs
@@ -109,7 +123,9 @@ spill_clone/
 │   │   ├── comment.dart        # Comment model with threading support
 │   │   ├── notification_item.dart  # Notification model
 │   │   ├── group.dart          # Group model with categories
-│   │   └── user.dart           # User profile model
+│   │   ├── user.dart           # User profile model
+│   │   ├── message.dart        # Direct message model
+│   │   └── conversation.dart   # Conversation model
 │   ├── screens/            # App screens
 │   │   ├── home_screen.dart        # Main timeline screen
 │   │   ├── compose_screen.dart     # Post creation screen
@@ -119,20 +135,27 @@ spill_clone/
 │   │   ├── edit_profile_screen.dart # Profile editing screen
 │   │   ├── groups_screen.dart       # Groups discovery screen
 │   │   ├── group_detail_screen.dart # Individual group screen
-│   │   └── create_group_screen.dart # Group creation screen
+│   │   ├── create_group_screen.dart # Group creation screen
+│   │   └── messaging/              # Messaging screens
+│   │       ├── conversations_screen.dart # Conversations list
+│   │       └── chat_screen.dart         # Individual chat
 │   ├── services/           # Business logic
 │   │   ├── post_service.dart       # Post management service
 │   │   ├── comment_service.dart    # Comment and reply management
 │   │   ├── notification_service.dart # Notification management service
 │   │   ├── group_service.dart      # Group management service
-│   │   └── user_service.dart       # User profile management
+│   │   ├── user_service.dart       # User profile management
+│   │   └── messaging_service.dart  # Messaging functionality
 │   ├── utils/              # Utilities and constants
 │   └── widgets/            # Reusable UI components
 │       ├── post_item.dart          # Post card widget
 │       ├── comment_item.dart       # Comment and reply widget
 │       ├── notification_item_widget.dart # Notification widget
 │       ├── group_item.dart         # Group list item widget
-│       └── group_category_chip.dart # Category filter widget
+│       ├── group_category_chip.dart # Category filter widget
+│       └── messaging/              # Messaging widgets
+│           ├── conversation_tile.dart # Conversation list item
+│           └── message_bubble.dart   # Individual message bubble
 ├── assets/                 # Images, fonts, etc.
 └── pubspec.yaml            # Project configuration
 ```
@@ -150,6 +173,7 @@ The app interface matches the provided design with:
 - Dark themed comments screen with threaded replies
 - User profiles with customizable information and social interactions
 - Group browsing and management functionality with categories
+- Direct messaging with clean, modern interface and image attachment support
 
 ## Getting Started
 
@@ -184,6 +208,10 @@ The app interface matches the provided design with:
 - Like comments by tapping the coffee cup icon
 - View user profiles by tapping the profile icon in bottom navigation
 - Follow/unfollow users from their profile pages
+- Send direct messages by tapping the message button on a user profile
+- View conversations by tapping the message icon in the bottom navigation
+- Share images in direct messages by tapping the photo icon
+- See when your messages are read with read receipts
 - Edit your profile by tapping the "Edit Profile" button
 - Customize your profile information including bio, location, and interests
 - Browse groups by tapping the groups icon in the bottom navigation
