@@ -3,10 +3,18 @@ import '../models/post.dart';
 
 class PostItem extends StatelessWidget {
   final Post post;
+  final VoidCallback? onLike;
+  final VoidCallback? onToggleJoin;
+  final VoidCallback? onComment;
+  final VoidCallback? onShare;
 
   const PostItem({
     Key? key,
     required this.post,
+    this.onLike,
+    this.onToggleJoin,
+    this.onComment,
+    this.onShare,
   }) : super(key: key);
 
   @override
@@ -63,18 +71,21 @@ class PostItem extends StatelessWidget {
                 ),
                 
                 // Joined button
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: post.hasJoined ? const Color(0xFF7941FF) : null,
-                    borderRadius: BorderRadius.circular(20),
-                    border: post.hasJoined ? null : Border.all(color: const Color(0xFF7941FF)),
-                  ),
-                  child: Text(
-                    post.hasJoined ? 'Joined' : 'Join',
-                    style: TextStyle(
-                      color: post.hasJoined ? Colors.white : const Color(0xFF7941FF),
-                      fontWeight: FontWeight.bold,
+                GestureDetector(
+                  onTap: onToggleJoin,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: post.hasJoined ? const Color(0xFF7941FF) : null,
+                      borderRadius: BorderRadius.circular(20),
+                      border: post.hasJoined ? null : Border.all(color: const Color(0xFF7941FF)),
+                    ),
+                    child: Text(
+                      post.hasJoined ? 'Joined' : 'Join',
+                      style: TextStyle(
+                        color: post.hasJoined ? Colors.white : const Color(0xFF7941FF),
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
@@ -114,21 +125,30 @@ class PostItem extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 // Send/Share button
-                _buildEngagementButton(
-                  icon: Icons.send_outlined,
-                  count: null,
+                GestureDetector(
+                  onTap: onShare,
+                  child: _buildEngagementButton(
+                    icon: Icons.send_outlined,
+                    count: null,
+                  ),
                 ),
                 
-                // Likes count shown as 16
-                _buildEngagementButton(
-                  icon: Icons.chat_bubble_outline,
-                  count: post.likes,
+                // Comments button
+                GestureDetector(
+                  onTap: onComment,
+                  child: _buildEngagementButton(
+                    icon: Icons.chat_bubble_outline,
+                    count: post.comments,
+                  ),
                 ),
                 
-                // Comments count shown as 0
-                _buildEngagementButton(
-                  icon: Icons.coffee_outlined,
-                  count: post.comments,
+                // Like button
+                GestureDetector(
+                  onTap: onLike,
+                  child: _buildEngagementButton(
+                    icon: Icons.coffee_outlined,
+                    count: post.likes,
+                  ),
                 ),
               ],
             ),
