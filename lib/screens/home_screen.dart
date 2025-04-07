@@ -86,7 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
     
     // Get unread group spills count
     final unreadGroupsCount = _groupService.getJoinedGroups()
-        .fold(0, (sum, group) => sum + group.newSpillsCount);
+        .fold<int>(0, (int sum, group) => sum + group.newSpillsCount);
     
     return Scaffold(
       // Use a gradient background color
