@@ -13,6 +13,7 @@ A Flutter implementation of the SPILL social media app based on the provided des
 - Bottom navigation bar with home, notifications, create post, search, and profile
 - Purple accent colors throughout the UI
 - **Compose functionality** with 500 character limit and media attachments
+- **Notifications system** with filtering and approval actions
 
 ## Compose Screen Features
 
@@ -23,6 +24,16 @@ A Flutter implementation of the SPILL social media app based on the provided des
 - Purple "Spill" button to submit posts
 - Gradient background matching the app theme
 
+## Notifications Screen Features
+
+- Purple gradient background
+- Filter tabs for "All", "New", "Friend Requests", "Groups", "Comments"
+- Section headers for different notification types
+- Unread indicators (blue dots)
+- "Approve" buttons for friend and group requests
+- Post thumbnails for group posts
+- Badge counter on the notifications icon
+
 ## Project Structure
 
 ```
@@ -30,15 +41,19 @@ spill_clone/
 ├── lib/
 │   ├── main.dart           # App entry point
 │   ├── models/             # Data models
-│   │   └── post.dart       # Post and Comment models
+│   │   ├── post.dart           # Post and Comment models
+│   │   └── notification_item.dart  # Notification model
 │   ├── screens/            # App screens
 │   │   ├── home_screen.dart    # Main timeline screen
-│   │   └── compose_screen.dart # Post creation screen
+│   │   ├── compose_screen.dart # Post creation screen
+│   │   └── notifications_screen.dart # Notifications screen
 │   ├── services/           # Business logic
-│   │   └── post_service.dart   # Post management service
+│   │   ├── post_service.dart   # Post management service
+│   │   └── notification_service.dart # Notification management service
 │   ├── utils/              # Utilities and constants
 │   └── widgets/            # Reusable UI components
-│       └── post_item.dart  # Post card widget
+│       ├── post_item.dart      # Post card widget
+│       └── notification_item_widget.dart # Notification widget
 ├── assets/                 # Images, fonts, etc.
 └── pubspec.yaml            # Project configuration
 ```
@@ -52,6 +67,7 @@ The app interface matches the provided design with:
 - Comment sections
 - Modern engagement buttons
 - Compose screen with media attachment options
+- Notifications screen with filtering tabs and approval actions
 
 ## Getting Started
 
@@ -78,3 +94,6 @@ The app interface matches the provided design with:
 - Posts are limited to 500 characters
 - Like posts by tapping the coffee icon
 - Join/leave groups with the Join/Joined button
+- View notifications by tapping the bell icon
+- Filter notifications by category using the tabs
+- Approve friend requests and group join requests
