@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/user.dart';
+import '../../utils/app_theme.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class ConversationTile extends StatelessWidget {
@@ -26,7 +27,7 @@ class ConversationTile extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           color: hasUnread 
-              ? Colors.white.withOpacity(0.1) 
+              ? Colors.white.withOpacity(0.12) 
               : Colors.transparent,
           border: Border(
             bottom: BorderSide(
@@ -41,7 +42,8 @@ class ConversationTile extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 24,
-                  backgroundImage: NetworkImage(user.profileImage),
+                  backgroundImage: AssetImage(user.profileImage),
+                  backgroundColor: AppTheme.purpleAccent,
                 ),
                 if (hasUnread)
                   Positioned(
@@ -51,7 +53,7 @@ class ConversationTile extends StatelessWidget {
                       width: 14,
                       height: 14,
                       decoration: BoxDecoration(
-                        color: Colors.blue,
+                        color: AppTheme.purpleAccent,
                         shape: BoxShape.circle,
                         border: Border.all(
                           color: Colors.white,
@@ -75,9 +77,9 @@ class ConversationTile extends StatelessWidget {
                         style: TextStyle(
                           fontWeight: hasUnread 
                               ? FontWeight.bold 
-                              : FontWeight.normal,
+                              : FontWeight.w600,
                           fontSize: 16,
-                          color: Colors.white,
+                          color: AppTheme.textPrimary,
                         ),
                       ),
                       if (timestamp != null)
@@ -86,8 +88,8 @@ class ConversationTile extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 12,
                             color: hasUnread 
-                                ? Colors.white 
-                                : Colors.white70,
+                                ? AppTheme.textPrimary
+                                : AppTheme.textSecondary,
                             fontWeight: hasUnread 
                                 ? FontWeight.bold 
                                 : FontWeight.normal,
@@ -103,8 +105,8 @@ class ConversationTile extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 14,
                       color: hasUnread 
-                          ? Colors.white.withOpacity(0.9) 
-                          : Colors.white70,
+                          ? AppTheme.textSecondary
+                          : AppTheme.textTertiary,
                       fontWeight: hasUnread 
                           ? FontWeight.w500 
                           : FontWeight.normal,
