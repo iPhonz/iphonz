@@ -103,12 +103,6 @@ class _MainScreenState extends State<MainScreen> {
           
           // Profile screen
           ProfileScreen(userId: currentUserId),
-          
-          // Messages screen (added)
-          ConversationsScreen(
-            userService: userService,
-            messagingService: messagingService,
-          ),
         ],
       ),
       bottomNavigationBar: Container(
@@ -170,12 +164,6 @@ class _MainScreenState extends State<MainScreen> {
               icon: Icon(Icons.person_outline),
               activeIcon: Icon(Icons.person),
               label: 'Profile',
-            ),
-            // Add the messages icon
-            BottomNavigationBarItem(
-              icon: Icon(Icons.message_outlined),
-              activeIcon: Icon(Icons.message),
-              label: 'Messages',
             ),
           ],
         ),
