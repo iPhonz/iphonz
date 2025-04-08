@@ -93,8 +93,8 @@ class _MainScreenState extends State<MainScreen> {
             // Home screen
             HomeScreen(userId: currentUserId),
             
-            // Groups screen
-            const GroupsScreen(),
+            // Groups screen - specifying showBackButton as false to prevent the back button from being shown
+            const GroupsScreen(showBackButton: false),
             
             // Compose screen placeholder - will be shown as modal
             Container(),
