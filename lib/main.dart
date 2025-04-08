@@ -11,6 +11,7 @@ import 'services/user_service.dart';
 import 'services/post_service.dart';
 import 'services/group_service.dart';
 import 'services/messaging_service.dart';
+import 'utils/app_theme.dart';
 
 void main() {
   runApp(const SpillApp());
@@ -25,7 +26,7 @@ class SpillApp extends StatelessWidget {
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.dark,
+        statusBarIconBrightness: Brightness.light,
       ),
     );
     
@@ -47,19 +48,7 @@ class SpillApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'SPILL',
-        theme: ThemeData(
-          primaryColor: Colors.black,
-          scaffoldBackgroundColor: const Color(0xFFF8E4E8), // Light pink background
-          fontFamily: 'Inter',
-          appBarTheme: const AppBarTheme(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-          ),
-          colorScheme: ColorScheme.light(
-            primary: Colors.black,
-            secondary: const Color(0xFF7941FF), // Purple accent color for buttons
-          ),
-        ),
+        theme: AppTheme.darkTheme,
         home: const MainScreen(),
       ),
     );
@@ -86,31 +75,44 @@ class _MainScreenState extends State<MainScreen> {
     final currentUserId = userService.getCurrentUserId() ?? '';
     
     return Scaffold(
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: [
-          // Home screen
-          HomeScreen(userId: currentUserId),
-          
-          // Groups screen
-          const GroupsScreen(),
-          
-          // Compose screen placeholder - will be shown as modal
-          Container(),
-          
-          // Notifications screen
-          const NotificationsScreen(),
-          
-          // Profile screen
-          ProfileScreen(userId: currentUserId),
-        ],
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              AppTheme.purpleDark,
+              AppTheme.purpleMedium.withOpacity(0.8),
+              Colors.black
+            ],
+          ),
+        ),
+        child: IndexedStack(
+          index: _selectedIndex,
+          children: [
+            // Home screen
+            HomeScreen(userId: currentUserId),
+            
+            // Groups screen
+            const GroupsScreen(),
+            
+            // Compose screen placeholder - will be shown as modal
+            Container(),
+            
+            // Notifications screen
+            const NotificationsScreen(),
+            
+            // Profile screen
+            ProfileScreen(userId: currentUserId),
+          ],
+        ),
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Colors.black,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withOpacity(0.3),
               blurRadius: 10,
               offset: const Offset(0, -5),
             ),
@@ -134,33 +136,40 @@ class _MainScreenState extends State<MainScreen> {
             }
           },
           type: BottomNavigationBarType.fixed,
-          backgroundColor: Colors.white,
-          selectedItemColor: const Color(0xFF7941FF), // Purple accent color
+          backgroundColor: Colors.black,
+          selectedItemColor: AppTheme.purpleAccent,
           unselectedItemColor: Colors.grey,
           showSelectedLabels: false,
           showUnselectedLabels: false,
-          items: const [
-            BottomNavigationBarItem(
+          items: [
+            const BottomNavigationBarItem(
               icon: Icon(Icons.home_outlined),
               activeIcon: Icon(Icons.home),
               label: 'Home',
             ),
-            BottomNavigationBarItem(
+            const BottomNavigationBarItem(
               icon: Icon(Icons.group_outlined),
               activeIcon: Icon(Icons.group),
               label: 'Groups',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.add_circle_outline, size: 30),
-              activeIcon: Icon(Icons.add_circle, size: 30),
+              icon: Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: AppTheme.purpleAccent,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.add, color: Colors.white, size: 30),
+              ),
               label: 'Create',
             ),
-            BottomNavigationBarItem(
+            const BottomNavigationBarItem(
               icon: Icon(Icons.notifications_outlined),
               activeIcon: Icon(Icons.notifications),
               label: 'Notifications',
             ),
-            BottomNavigationBarItem(
+            const BottomNavigationBarItem(
               icon: Icon(Icons.person_outline),
               activeIcon: Icon(Icons.person),
               label: 'Profile',
