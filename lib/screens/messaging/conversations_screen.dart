@@ -25,6 +25,8 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
   List<Conversation> _conversations = [];
   Map<String, User> _userCache = {};
   bool _isLoading = true;
+  bool _hasError = false;
+  String? _errorMessage;
   String? _currentUserId;
 
   @override
@@ -32,6 +34,19 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
     super.initState();
     _loadCurrentUser();
     _listenToConversations();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // This will ensure data is refreshed when navigating back to this screen
+    _refreshData();
+  }
+
+  void _refreshData() {
+    if (_currentUserId != null) {
+      _loadConversations();
+    }
   }
 
   Future<void> _loadCurrentUser() async {
@@ -42,22 +57,23 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
   }
 
   Future<void> _loadConversations() async {
-    setState(() {
-      _isLoading = true;
-    });
+    if (mounted) {
+      setState(() {
+        _isLoading = true;
+        _hasError = false;
+        _errorMessage = null;
+      });
+    }
 
     try {
       final conversations = await widget.messagingService.getConversationsForUser(_currentUserId!);
-      setState(() {
-        _conversations = conversations;
-      });
-
+      
       // Preload user data for all participants
       for (final conversation in conversations) {
         for (final userId in conversation.participantIds) {
           if (userId != _currentUserId && !_userCache.containsKey(userId)) {
             final user = await widget.userService.getUserById(userId);
-            if (user != null) {
+            if (user != null && mounted) {
               setState(() {
                 _userCache[userId] = user;
               });
@@ -65,23 +81,35 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
           }
         }
       }
+      
+      if (mounted) {
+        setState(() {
+          _conversations = conversations;
+          _isLoading = false;
+        });
+      }
     } catch (e) {
-      // Handle error
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _hasError = true;
+          _errorMessage = 'Failed to load conversations: $e';
+        });
+      }
+      // Show error message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to load conversations: $e')),
       );
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
     }
   }
 
   void _listenToConversations() {
     widget.messagingService.conversations.listen((updatedConversations) {
-      setState(() {
-        _conversations = updatedConversations;
-      });
+      if (mounted) {
+        setState(() {
+          _conversations = updatedConversations;
+        });
+      }
     });
   }
 
@@ -116,17 +144,81 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
       ),
       body: Container(
         decoration: AppTheme.messageGradientBackground,
-        child: _isLoading
-            ? const Center(child: CircularProgressIndicator(color: Colors.white))
-            : _conversations.isEmpty
-                ? _buildEmptyState()
-                : _buildConversationList(),
+        child: RefreshIndicator(
+          onRefresh: _loadConversations,
+          color: AppTheme.purpleAccent,
+          child: _buildMainContent(),
+        ),
       ),
     );
   }
 
+  Widget _buildMainContent() {
+    if (_isLoading) {
+      return const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(color: Colors.white),
+            SizedBox(height: 16),
+            Text(
+              'Loading conversations...',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (_hasError) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.error_outline,
+              color: Colors.white,
+              size: 48,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              _errorMessage ?? 'An error occurred',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: _loadConversations,
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: AppTheme.purpleAccent,
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (_conversations.isEmpty) {
+      return _buildEmptyState();
+    } else {
+      return _buildConversationList();
+    }
+  }
+
   Widget _buildEmptyState() {
-    return Column(
+    return ListView(
       children: [
         // New message card at the top
         Container(
@@ -167,7 +259,7 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                       fontWeight: FontWeight.w500,
                     ),
                     prefixIcon: const Icon(Icons.search, color: Color(0xFF666666)),
-                    fillColor: const Color(0xFF2D2D2D),
+                    fillColor: const Color(0xFFF5F5F5),
                     filled: true,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(30),
@@ -176,9 +268,13 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                     contentPadding: const EdgeInsets.symmetric(vertical: 12),
                   ),
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: Color(0xFF333333),
                     fontWeight: FontWeight.w500,
                   ),
+                  onTap: () {
+                    // Open search dialog
+                    _showNewMessageDialog();
+                  },
                 ),
               ),
               const SizedBox(height: 16),
@@ -257,44 +353,43 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
         ),
         
         // Empty state message
-        Expanded(
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(40),
-                  ),
-                  child: Icon(
-                    Icons.message_outlined,
-                    size: 40,
-                    color: Colors.white,
-                  ),
+        Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(40),
                 ),
-                const SizedBox(height: 24),
-                const Text(
-                  'No messages yet',
-                  style: TextStyle(
-                    fontSize: 24, 
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+                child: const Icon(
+                  Icons.message_outlined,
+                  size: 40,
+                  color: Colors.white,
                 ),
-                const SizedBox(height: 12),
-                const Text(
-                  'Send a message to start the conversation',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w400,
-                  ),
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                'No messages yet',
+                style: TextStyle(
+                  fontSize: 24, 
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'Send a message to start the conversation',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+              const SizedBox(height: 40),
+            ],
           ),
         ),
       ],
@@ -313,10 +408,50 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
         final otherUser = _userCache[otherUserId];
         
         if (otherUser == null) {
-          // Still loading user data
-          return const ListTile(
-            leading: CircleAvatar(child: Icon(Icons.person)),
-            title: Text('Loading...', style: TextStyle(color: Colors.white)),
+          // Still loading user data, show a better loading placeholder
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 25,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
+                  backgroundColor: Colors.black12,
+                ),
+                SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        width: 120,
+                        height: 16,
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: Colors.white24,
+                            borderRadius: BorderRadius.all(Radius.circular(8)),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      SizedBox(
+                        width: 200,
+                        height: 12,
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: Colors.white10,
+                            borderRadius: BorderRadius.all(Radius.circular(6)),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           );
         }
         
@@ -335,7 +470,10 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                   messagingService: widget.messagingService,
                 ),
               ),
-            );
+            ).then((_) {
+              // Refresh the conversations list when returning from the chat screen
+              _refreshData();
+            });
           },
         );
       },
@@ -457,7 +595,10 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                               messagingService: widget.messagingService,
                             ),
                           ),
-                        );
+                        ).then((_) {
+                          // Refresh the conversations list when returning from the chat screen
+                          _refreshData();
+                        });
                       },
                     );
                   },
@@ -468,5 +609,11 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
         ),
       ),
     );
+  }
+  
+  @override
+  void dispose() {
+    // Make sure to clean up any resources if needed
+    super.dispose();
   }
 }
