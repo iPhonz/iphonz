@@ -134,6 +134,13 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -143,7 +150,7 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                 child: Text(
                   'New Message',
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 22,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF333333),
                   ),
@@ -155,15 +162,22 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                 child: TextField(
                   decoration: InputDecoration(
                     hintText: 'Search for a user',
-                    hintStyle: TextStyle(color: Colors.grey.shade600),
-                    prefixIcon: const Icon(Icons.search, color: Colors.grey),
-                    fillColor: AppTheme.searchBarBackground,
+                    hintStyle: const TextStyle(
+                      color: Color(0xFF666666),
+                      fontWeight: FontWeight.w500,
+                    ),
+                    prefixIcon: const Icon(Icons.search, color: Color(0xFF666666)),
+                    fillColor: const Color(0xFF2D2D2D),
                     filled: true,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(30),
                       borderSide: BorderSide.none,
                     ),
                     contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
@@ -178,6 +192,28 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                       backgroundColor: AppTheme.purpleAccent,
                     ),
                     const SizedBox(width: 16),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'User Name',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: Color(0xFF333333),
+                            ),
+                          ),
+                          Text(
+                            '@username',
+                            style: TextStyle(
+                              color: Color(0xFF666666),
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -190,6 +226,28 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                       backgroundColor: AppTheme.purpleAccent,
                     ),
                     const SizedBox(width: 16),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'User Name',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: Color(0xFF333333),
+                            ),
+                          ),
+                          Text(
+                            '@username',
+                            style: TextStyle(
+                              color: Color(0xFF666666),
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -204,26 +262,35 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.message_outlined,
-                  size: 80,
-                  color: AppTheme.textPrimary.withOpacity(0.8),
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(40),
+                  ),
+                  child: Icon(
+                    Icons.message_outlined,
+                    size: 40,
+                    color: Colors.white,
+                  ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 24),
                 const Text(
                   'No messages yet',
                   style: TextStyle(
-                    fontSize: 22, 
+                    fontSize: 24, 
                     fontWeight: FontWeight.bold,
-                    color: AppTheme.textPrimary,
+                    color: Colors.white,
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 12),
                 const Text(
                   'Send a message to start the conversation',
                   style: TextStyle(
                     fontSize: 16,
-                    color: AppTheme.textSecondary,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w400,
                   ),
                 ),
               ],
@@ -313,7 +380,7 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
               const Text(
                 'New Message',
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: 22,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF333333),
                 ),
@@ -324,11 +391,21 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                 child: TextField(
                   decoration: InputDecoration(
                     hintText: 'Search for a user',
-                    hintStyle: TextStyle(color: Colors.grey.shade600),
-                    prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                    hintStyle: const TextStyle(
+                      color: Color(0xFF666666),
+                      fontWeight: FontWeight.w500,
+                    ),
+                    prefixIcon: const Icon(Icons.search, color: Color(0xFF666666)),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(30),
+                      borderSide: BorderSide(color: Colors.grey.shade300),
                     ),
+                    fillColor: Colors.grey.shade100,
+                    filled: true,
+                  ),
+                  style: const TextStyle(
+                    color: Color(0xFF333333),
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
@@ -342,18 +419,21 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                     return ListTile(
                       leading: CircleAvatar(
                         backgroundImage: AssetImage(user.profileImage),
+                        radius: 24,
                       ),
                       title: Text(
                         user.displayName,
                         style: const TextStyle(
                           color: Color(0xFF333333),
                           fontWeight: FontWeight.w600,
+                          fontSize: 16,
                         ),
                       ),
                       subtitle: Text(
                         '@${user.username}',
-                        style: TextStyle(
-                          color: Colors.grey.shade700,
+                        style: const TextStyle(
+                          color: Color(0xFF666666),
+                          fontSize: 14,
                         ),
                       ),
                       onTap: () async {
