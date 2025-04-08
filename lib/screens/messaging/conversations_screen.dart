@@ -3,6 +3,7 @@ import '../../models/conversation.dart';
 import '../../models/user.dart';
 import '../../services/messaging_service.dart';
 import '../../services/user_service.dart';
+import '../../utils/app_theme.dart';
 import 'chat_screen.dart';
 import '../../widgets/messaging/conversation_tile.dart';
 
@@ -87,10 +88,22 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
-        title: const Text('Messages', style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.deepPurple,
+        title: const Text(
+          'Messages',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: Colors.transparent,
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.search, color: Colors.white),
@@ -102,13 +115,7 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
         ],
       ),
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Colors.deepPurple, Colors.pink.shade300],
-          ),
-        ),
+        decoration: AppTheme.messageGradientBackground,
         child: _isLoading
             ? const Center(child: CircularProgressIndicator(color: Colors.white))
             : _conversations.isEmpty
@@ -119,40 +126,111 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
   }
 
   Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.message, size: 80, color: Colors.white70),
-          const SizedBox(height: 16),
-          const Text(
-            'No messages yet',
-            style: TextStyle(
-              fontSize: 22, 
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+    return Column(
+      children: [
+        // New message card at the top
+        Container(
+          margin: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
           ),
-          const SizedBox(height: 8),
-          const Text(
-            'Start a conversation with someone',
-            style: TextStyle(fontSize: 16, color: Colors.white70),
-          ),
-          const SizedBox(height: 24),
-          ElevatedButton(
-            onPressed: () => _showNewMessageDialog(),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              foregroundColor: Colors.deepPurple,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(20.0),
+                child: Text(
+                  'New Message',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF333333),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
               ),
-            ),
-            child: const Text('New Message'),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                child: TextField(
+                  decoration: InputDecoration(
+                    hintText: 'Search for a user',
+                    hintStyle: TextStyle(color: Colors.grey.shade600),
+                    prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                    fillColor: AppTheme.searchBarBackground,
+                    filled: true,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              // User list would go here but we'll use placeholders for now
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 25,
+                      backgroundColor: AppTheme.purpleAccent,
+                    ),
+                    const SizedBox(width: 16),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 25,
+                      backgroundColor: AppTheme.purpleAccent,
+                    ),
+                    const SizedBox(width: 16),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
           ),
-        ],
-      ),
+        ),
+        
+        // Empty state message
+        Expanded(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.message_outlined,
+                  size: 80,
+                  color: AppTheme.textPrimary.withOpacity(0.8),
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'No messages yet',
+                  style: TextStyle(
+                    fontSize: 22, 
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Send a message to start the conversation',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: AppTheme.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -237,6 +315,7 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
+                  color: Color(0xFF333333),
                 ),
               ),
               const SizedBox(height: 16),
@@ -245,7 +324,8 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                 child: TextField(
                   decoration: InputDecoration(
                     hintText: 'Search for a user',
-                    prefixIcon: const Icon(Icons.search),
+                    hintStyle: TextStyle(color: Colors.grey.shade600),
+                    prefixIcon: const Icon(Icons.search, color: Colors.grey),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
@@ -261,15 +341,25 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                     final user = filteredUsers[index];
                     return ListTile(
                       leading: CircleAvatar(
-                        backgroundImage: NetworkImage(user.profileImage),
+                        backgroundImage: AssetImage(user.profileImage),
                       ),
-                      title: Text(user.displayName),
-                      subtitle: Text('@${user.username}'),
+                      title: Text(
+                        user.displayName,
+                        style: const TextStyle(
+                          color: Color(0xFF333333),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      subtitle: Text(
+                        '@${user.username}',
+                        style: TextStyle(
+                          color: Colors.grey.shade700,
+                        ),
+                      ),
                       onTap: () async {
                         Navigator.pop(context);
                         
                         // Create or get conversation
-                        // Updated to use the public method instead of the private one
                         final conversationId = await widget.messagingService.getOrCreateConversation(
                           _currentUserId!,
                           user.id,
