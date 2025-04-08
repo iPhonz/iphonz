@@ -4,22 +4,51 @@ class AppTheme {
   // Dark theme colors
   static const Color purpleDark = Color(0xFF2A1B70);
   static const Color purpleMedium = Color(0xFF6236FF);
-  static const Color purpleAccent = Color(0xFF7941FF);
+  static const Color purpleAccent = Color(0xFF7941FF); 
+  static const Color purpleLight = Color(0xFFB298FF); // Added lighter purple for contrast
   static const Color darkBackground = Color(0xFF121212);
   static const Color cardBackground = Color(0xFF1F1F1F);
+  static const Color messageCardBackground = Color(0xFF2D2D2D); // Darker for message cards
   static const Color coral = Color(0xFFFF8370);
+  static const Color searchBarBackground = Color(0xFF2D2D2D);
   
   // Typography colors
   static const Color textPrimary = Colors.white;
-  static const Color textSecondary = Color(0xFFB0B0B0);
+  static const Color textSecondary = Color(0xFFDDDDDD); // Changed from B0B0B0 to DDDDDD for better contrast
+  static const Color textTertiary = Color(0xFFAAAAAA); // Added for subtle text with better contrast
+  static const Color placeholderText = Color(0xFFB8B8B8); // For input placeholders
   
   // Button colors
   static const Color buttonPrimary = purpleAccent;
   static const Color buttonSecondary = coral;
+  static const Color buttonText = Colors.white;
+  static const Color joinedButtonText = Colors.white;
+  static const Color joinButtonBackground = purpleAccent;
+  
+  // Group screen colors
+  static const Color groupItemBackground = Color(0xFFF5F5F5);
+  static const Color groupItemText = Color(0xFF333333);
+  static const Color groupCountText = Color(0xFF666666);
+  static const Color groupHeaderBackground = purpleDark;
+  static const Color groupHeaderText = Colors.white;
   
   // Icon colors
   static const Color iconActive = purpleAccent;
-  static const Color iconInactive = Color(0xFF808080);
+  static const Color iconInactive = Color(0xFFAAAAAA); // Changed from 808080 to AAAAAA
+  
+  // Message screen colors
+  static const Color messageBubbleOutgoing = purpleAccent;
+  static const Color messageBubbleIncoming = Color(0xFF3D3D3D); 
+  static const Color messageTextOutgoing = Colors.white;
+  static const Color messageTextIncoming = Colors.white;
+  static const Color messageInputBackground = Colors.white;
+  static const Color messageInputText = Color(0xFF333333);
+  static const Color messageInputBorder = purpleAccent;
+  static const Color messageTimestamp = Color(0xFFB8B8B8);
+  static const Color messageScreenGradientStart = purpleDark;
+  static const Color messageScreenGradientEnd = Color(0xFFBF4098); // Pink-ish bottom gradient
+  static const Color noMessagesYetText = Colors.white;
+  static const Color messageScreenHeaderText = textPrimary;
   
   // Border radius
   static const double borderRadiusSmall = 8.0;
@@ -76,6 +105,16 @@ class AppTheme {
         fontSize: 18,
         fontWeight: FontWeight.bold,
       ),
+      titleLarge: TextStyle(
+        color: textPrimary,
+        fontSize: 18,
+        fontWeight: FontWeight.w600,
+      ),
+      titleMedium: TextStyle(
+        color: textPrimary,
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
+      ),
       bodyLarge: TextStyle(
         color: textPrimary,
         fontSize: 16,
@@ -83,6 +122,15 @@ class AppTheme {
       bodyMedium: TextStyle(
         color: textSecondary,
         fontSize: 14,
+      ),
+      labelLarge: TextStyle(
+        color: textPrimary,
+        fontSize: 14,
+        fontWeight: FontWeight.bold,
+      ),
+      labelMedium: TextStyle(
+        color: textSecondary,
+        fontSize: 12,
       ),
     ),
     colorScheme: ColorScheme.dark(
@@ -149,7 +197,8 @@ class AppTheme {
     // Input decoration
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: cardBackground,
+      fillColor: searchBarBackground,
+      hintStyle: const TextStyle(color: placeholderText),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(borderRadiusMedium),
         borderSide: BorderSide.none,
@@ -162,6 +211,31 @@ class AppTheme {
         borderRadius: BorderRadius.circular(borderRadiusMedium),
         borderSide: const BorderSide(color: purpleAccent),
       ),
+    ),
+  );
+  
+  // Method to create a gradient background for various screens
+  static BoxDecoration get purpleGradientBackground => BoxDecoration(
+    gradient: LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: [
+        purpleDark,
+        purpleMedium.withOpacity(0.8),
+        messageScreenGradientEnd.withOpacity(0.9),
+      ],
+    ),
+  );
+  
+  // Method to create the message gradient background
+  static BoxDecoration get messageGradientBackground => BoxDecoration(
+    gradient: LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: [
+        messageScreenGradientStart,
+        messageScreenGradientEnd,
+      ],
     ),
   );
 }
