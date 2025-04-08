@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../models/message.dart';
 import '../../models/user.dart';
+import '../../utils/app_theme.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class MessageBubble extends StatelessWidget {
@@ -28,7 +29,8 @@ class MessageBubble extends StatelessWidget {
           if (!isCurrentUser) ...[
             CircleAvatar(
               radius: 16,
-              backgroundImage: NetworkImage(user!.profileImage),
+              backgroundImage: AssetImage(user!.profileImage),
+              backgroundColor: AppTheme.purpleAccent,
             ),
             const SizedBox(width: 8),
           ],
@@ -40,9 +42,14 @@ class MessageBubble extends StatelessWidget {
               ),
               decoration: BoxDecoration(
                 color: isCurrentUser 
-                    ? Colors.white
-                    : Colors.black38,
-                borderRadius: BorderRadius.circular(20),
+                    ? AppTheme.messageBubbleOutgoing
+                    : AppTheme.messageBubbleIncoming,
+                borderRadius: BorderRadius.only(
+                  topLeft: const Radius.circular(20),
+                  topRight: const Radius.circular(20),
+                  bottomLeft: Radius.circular(isCurrentUser ? 20 : 5),
+                  bottomRight: Radius.circular(isCurrentUser ? 5 : 20),
+                ),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -65,7 +72,9 @@ class MessageBubble extends StatelessWidget {
                     Text(
                       message.content,
                       style: TextStyle(
-                        color: isCurrentUser ? Colors.black87 : Colors.white,
+                        color: isCurrentUser 
+                            ? AppTheme.messageTextOutgoing 
+                            : AppTheme.messageTextIncoming,
                         fontSize: 16,
                       ),
                     ),
@@ -77,9 +86,9 @@ class MessageBubble extends StatelessWidget {
                         timeago.format(message.timestamp),
                         style: TextStyle(
                           color: isCurrentUser 
-                              ? Colors.black54 
-                              : Colors.white70,
-                          fontSize: 10,
+                              ? AppTheme.messageTextOutgoing.withOpacity(0.7) 
+                              : AppTheme.messageTextIncoming.withOpacity(0.7),
+                          fontSize: 11,
                         ),
                       ),
                       if (isCurrentUser) ...[
@@ -88,10 +97,10 @@ class MessageBubble extends StatelessWidget {
                           message.isRead 
                               ? Icons.done_all 
                               : Icons.done,
-                          size: 12,
+                          size: 14,
                           color: message.isRead 
-                              ? Colors.blue 
-                              : Colors.black54,
+                              ? Colors.lightBlue.shade200 
+                              : AppTheme.messageTextOutgoing.withOpacity(0.7),
                         ),
                       ],
                     ],
