@@ -23,7 +23,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0;
   final PostService _postService = PostService();
   final NotificationService _notificationService = NotificationService();
   final UserService _userService = UserService(); // Add user service for profile
@@ -51,39 +50,6 @@ class _HomeScreenState extends State<HomeScreen> {
       _posts = _postService.getPosts();
     });
   }
-
-  // Method to navigate to compose screen
-  void _navigateToComposeScreen() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const ComposeScreen()),
-    );
-  }
-  
-  // Method to navigate to notifications screen
-  void _navigateToNotificationsScreen() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const NotificationsScreen()),
-    );
-  }
-  
-  // Method to navigate to profile screen
-  void _navigateToProfileScreen() {
-    final currentUserId = _userService.getCurrentUserId() ?? '';
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => ProfileScreen(userId: currentUserId)),
-    );
-  }
-  
-  // Method to navigate to groups screen
-  void _navigateToGroupsScreen() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const GroupsScreen()),
-    );
-  }
   
   // Method to navigate to messaging screen
   void _navigateToMessagingScreen() {
@@ -100,9 +66,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Get unread notifications count
-    final unreadCount = _notificationService.getUnreadCount();
-    
     return Scaffold(
       backgroundColor: Colors.transparent,
       // Custom AppBar with SPILL title and search icon
@@ -150,109 +113,7 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         },
       ),
-      // Only keep the bottom navigation bar
-      bottomNavigationBar: Theme(
-        data: Theme.of(context).copyWith(
-          splashColor: Colors.transparent,
-          highlightColor: Colors.transparent,
-        ),
-        child: Container(
-          decoration: const BoxDecoration(
-            color: Colors.black,
-            border: Border(
-              top: BorderSide(
-                color: Colors.black,
-                width: 0.5,
-              ),
-            ),
-          ),
-          child: BottomNavigationBar(
-            type: BottomNavigationBarType.fixed,
-            backgroundColor: Colors.transparent,
-            selectedItemColor: AppTheme.purpleAccent,
-            unselectedItemColor: Colors.white,
-            showSelectedLabels: false,
-            showUnselectedLabels: false,
-            currentIndex: _selectedIndex,
-            elevation: 0,
-            onTap: (index) {
-              setState(() {
-                if (index == 2) {
-                  // Navigate to compose screen when the center "+" button is tapped
-                  _navigateToComposeScreen();
-                } else if (index == 3) {
-                  // Navigate to notifications screen when the notifications icon is tapped
-                  _navigateToNotificationsScreen();
-                } else if (index == 4) {
-                  // Navigate to profile screen when the profile icon is tapped
-                  _navigateToProfileScreen();
-                } else if (index == 1) {
-                  // Navigate to groups screen when the groups icon is tapped
-                  _navigateToGroupsScreen();
-                } else {
-                  _selectedIndex = index;
-                }
-              });
-            },
-            items: [
-              const BottomNavigationBarItem(
-                icon: Icon(Icons.home_outlined),
-                activeIcon: Icon(Icons.home),
-                label: 'Home',
-              ),
-              const BottomNavigationBarItem(
-                icon: Icon(Icons.group_outlined),
-                activeIcon: Icon(Icons.group),
-                label: 'Groups',
-              ),
-              BottomNavigationBarItem(
-                icon: Container(
-                  width: 50,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: AppTheme.purpleAccent,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(Icons.add, color: Colors.white, size: 30),
-                ),
-                label: 'Create',
-              ),
-              BottomNavigationBarItem(
-                icon: Stack(
-                  children: [
-                    const Icon(Icons.notifications_none),
-                    if (unreadCount > 0)
-                      Positioned(
-                        right: 0,
-                        top: 0,
-                        child: Container(
-                          padding: const EdgeInsets.all(1),
-                          decoration: const BoxDecoration(
-                            color: Colors.blue,
-                            shape: BoxShape.circle,
-                          ),
-                          constraints: const BoxConstraints(
-                            minWidth: 8,
-                            minHeight: 8,
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-                activeIcon: const Icon(Icons.notifications),
-                label: 'Notifications',
-              ),
-              BottomNavigationBarItem(
-                icon: CircleAvatar(
-                  radius: 15,
-                  backgroundImage: AssetImage(_userService.currentUser.profileImage),
-                ),
-                label: 'Profile',
-              ),
-            ],
-          ),
-        ),
-      ),
+      // Removed the bottom navigation bar from here as it's already defined in main.dart
     );
   }
 }
