@@ -357,73 +357,73 @@ class _ComposeScreenState extends State<ComposeScreen> {
                         ),
                       ],
                       
-                      // Post button and media attachment options
-                      Row(
-                        children: [
-                          // Media attachment options
-                          Expanded(
-                            child: Container(
-                              margin: const EdgeInsets.only(top: 16),
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade200,
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                children: [
-                                  _buildMediaButton(Icons.photo, 'Photo'),
-                                  _buildMediaButton(Icons.camera_alt, 'Camera'),
-                                  _buildMediaButton(Icons.gif_box, 'GIF'),
-                                  _buildMediaButton(Icons.bar_chart, 'Poll'),
-                                  GestureDetector(
-                                    onTap: () => _selectMedia('NSFW'),
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                                      decoration: BoxDecoration(
-                                        color: Colors.black,
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      child: const Text(
-                                        'NSFW',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 12,
+                      // Footer with media options and Spill button
+                      Container(
+                        margin: const EdgeInsets.only(top: 16),
+                        child: Row(
+                          children: [
+                            // Media attachment options in a scrollable container
+                            Expanded(
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  children: [
+                                    _buildMediaButton(Icons.photo, 'Photo'),
+                                    _buildMediaButton(Icons.camera_alt, 'Camera'),
+                                    _buildMediaButton(Icons.gif_box, 'GIF'),
+                                    _buildMediaButton(Icons.bar_chart, 'Poll'),
+                                    // NSFW tag
+                                    GestureDetector(
+                                      onTap: () => _selectMedia('NSFW'),
+                                      child: Container(
+                                        margin: const EdgeInsets.symmetric(horizontal: 8),
+                                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                        decoration: BoxDecoration(
+                                          color: Colors.black,
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        child: const Text(
+                                          'SFW',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 12,
+                                          ),
                                         ),
                                       ),
                                     ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            
+                            // Spill button - Fixed positioning
+                            Container(
+                              margin: const EdgeInsets.only(left: 8),
+                              child: ElevatedButton(
+                                onPressed: _canPost ? _createPost : null,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppTheme.purpleAccent,
+                                  disabledBackgroundColor: AppTheme.purpleAccent.withOpacity(0.5),
+                                  disabledForegroundColor: Colors.white,
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(24),
                                   ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          
-                          // Spill button
-                          Container(
-                            margin: const EdgeInsets.only(top: 16, left: 12),
-                            child: ElevatedButton(
-                              onPressed: _canPost ? _createPost : null,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppTheme.purpleAccent,
-                                foregroundColor: Colors.white,
-                                disabledBackgroundColor: AppTheme.purpleAccent.withOpacity(0.5),
-                                disabledForegroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
+                                  elevation: 2,
                                 ),
-                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                              ),
-                              child: const Text(
-                                'Spill',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
+                                child: const Text(
+                                  'Spill',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -438,9 +438,10 @@ class _ComposeScreenState extends State<ComposeScreen> {
 
   Widget _buildMediaButton(IconData icon, String label) {
     return IconButton(
-      icon: Icon(icon, color: Colors.black),
+      icon: Icon(icon, color: Colors.black87, size: 28),
       onPressed: () => _selectMedia(label),
       tooltip: label,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
     );
   }
 }
