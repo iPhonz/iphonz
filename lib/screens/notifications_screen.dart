@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import '../models/notification_item.dart';
 import '../widgets/notification_item_widget.dart';
 import '../services/notification_service.dart';
+import '../utils/app_theme.dart';
 
 class NotificationsScreen extends StatefulWidget {
-  const NotificationsScreen({Key? key}) : super(key: key);
+  // Added parameter to control whether to show the back button
+  final bool showBackButton;
+  
+  const NotificationsScreen({Key? key, this.showBackButton = false}) : super(key: key);
 
   @override
   State<NotificationsScreen> createState() => _NotificationsScreenState();
@@ -59,15 +63,16 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF2A1C5A), // Dark purple background
+      backgroundColor: Colors.transparent, // Use transparent background to work with gradient
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
+        // Only show back button if showBackButton is true
+        leading: widget.showBackButton ? IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
-        ),
+        ) : null,
         title: const Text(
           'Notifications',
           style: TextStyle(
@@ -78,16 +83,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         ),
       ),
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF462984), // Lighter purple
-              Color(0xFF2A1C5A), // Darker purple
-            ],
-          ),
-        ),
+        decoration: AppTheme.purpleGradientBackground,
         child: SafeArea(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
