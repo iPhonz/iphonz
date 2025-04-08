@@ -99,8 +99,8 @@ class _MainScreenState extends State<MainScreen> {
             // Compose screen placeholder - will be shown as modal
             Container(),
             
-            // Notifications screen
-            const NotificationsScreen(),
+            // Notifications screen with showBackButton set to false
+            const NotificationsScreen(showBackButton: false),
             
             // Profile screen
             ProfileScreen(userId: currentUserId),
