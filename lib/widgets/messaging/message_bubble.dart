@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
 import '../../models/message.dart';
 import '../../models/user.dart';
 import '../../utils/app_theme.dart';
@@ -54,20 +55,10 @@ class MessageBubble extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Display image if present
                   if (message.type == MessageType.image && message.mediaUrl != null)
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.network(
-                        message.mediaUrl!,
-                        width: 200,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => const Icon(
-                          Icons.image_not_supported,
-                          size: 100,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ),
+                    _buildMessageImage(message.mediaUrl!),
+                  // Always display content text
                   if (message.content.isNotEmpty)
                     Text(
                       message.content,
@@ -110,6 +101,91 @@ class MessageBubble extends StatelessWidget {
             ),
           ),
           if (isCurrentUser) const SizedBox(width: 24),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMessageImage(String mediaUrl) {
+    // Check if this is a local file path (file:// prefix)
+    if (mediaUrl.startsWith('file://')) {
+      final filePath = mediaUrl.substring(7); // Remove 'file://' prefix
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          constraints: const BoxConstraints(
+            maxWidth: 250,
+            maxHeight: 300,
+          ),
+          child: Image.file(
+            File(filePath),
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) => _buildImageError(),
+          ),
+        ),
+      );
+    } else {
+      // Remote image URL
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          constraints: const BoxConstraints(
+            maxWidth: 250,
+            maxHeight: 300,
+          ),
+          child: Image.network(
+            mediaUrl,
+            fit: BoxFit.cover,
+            loadingBuilder: (context, child, loadingProgress) {
+              if (loadingProgress == null) return child;
+              return _buildImageLoading(loadingProgress);
+            },
+            errorBuilder: (context, error, stackTrace) => _buildImageError(),
+          ),
+        ),
+      );
+    }
+  }
+
+  Widget _buildImageLoading(ImageChunkEvent loadingProgress) {
+    return Container(
+      width: 200,
+      height: 150,
+      color: Colors.black12,
+      child: Center(
+        child: CircularProgressIndicator(
+          value: loadingProgress.expectedTotalBytes != null
+              ? loadingProgress.cumulativeBytesLoaded / 
+                  loadingProgress.expectedTotalBytes!
+              : null,
+          strokeWidth: 2,
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImageError() {
+    return Container(
+      width: 200,
+      height: 150,
+      color: Colors.black12,
+      child: const Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.image_not_supported,
+            size: 40,
+            color: Colors.white54,
+          ),
+          SizedBox(height: 8),
+          Text(
+            'Image not available',
+            style: TextStyle(
+              color: Colors.white70,
+              fontSize: 12,
+            ),
+          ),
         ],
       ),
     );
