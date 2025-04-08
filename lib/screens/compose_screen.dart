@@ -5,6 +5,7 @@ import '../services/group_service.dart';
 import '../services/user_service.dart';
 import '../models/post.dart';
 import '../models/group.dart';
+import '../utils/app_theme.dart';
 
 class ComposeScreen extends StatefulWidget {
   final String? groupId; // Optional group ID if composing directly for a group
@@ -102,7 +103,7 @@ class _ComposeScreenState extends State<ComposeScreen> {
         text: match.group(0),
         style: const TextStyle(
           fontSize: 22,
-          color: Color(0xFF7941FF),
+          color: AppTheme.purpleAccent,
           fontWeight: FontWeight.bold,
         ),
       ));
@@ -230,50 +231,27 @@ class _ComposeScreenState extends State<ComposeScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.close, color: Colors.black, size: 30),
+          icon: const Icon(Icons.close, color: Colors.white, size: 30),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: const Text(
           'Compose',
           style: TextStyle(
-            color: Colors.black,
+            color: Colors.white,
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
         ),
         centerTitle: true,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: ElevatedButton(
-              onPressed: _canPost ? _createPost : null,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF7941FF),
-                foregroundColor: Colors.white,
-                disabledBackgroundColor: const Color(0xFF7941FF).withOpacity(0.5),
-                disabledForegroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              ),
-              child: const Text(
-                'Spill',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-        ],
       ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
             colors: [
-              Color(0xFF7941FF), // Purple
+              AppTheme.purpleDark,
+              AppTheme.purpleMedium,
               Color(0xFFF8B0B0), // Pinkish
             ],
           ),
@@ -379,41 +357,73 @@ class _ComposeScreenState extends State<ComposeScreen> {
                         ),
                       ],
                       
-                      // Media attachment options
-                      Container(
-                        margin: const EdgeInsets.only(top: 16),
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade200,
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            _buildMediaButton(Icons.photo, 'Photo'),
-                            _buildMediaButton(Icons.camera_alt, 'Camera'),
-                            _buildMediaButton(Icons.gif_box, 'GIF'),
-                            _buildMediaButton(Icons.bar_chart, 'Poll'),
-                            GestureDetector(
-                              onTap: () => _selectMedia('NSFW'),
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                                decoration: BoxDecoration(
-                                  color: Colors.black,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: const Text(
-                                  'NSFW',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 12,
+                      // Post button and media attachment options
+                      Row(
+                        children: [
+                          // Media attachment options
+                          Expanded(
+                            child: Container(
+                              margin: const EdgeInsets.only(top: 16),
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade200,
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                children: [
+                                  _buildMediaButton(Icons.photo, 'Photo'),
+                                  _buildMediaButton(Icons.camera_alt, 'Camera'),
+                                  _buildMediaButton(Icons.gif_box, 'GIF'),
+                                  _buildMediaButton(Icons.bar_chart, 'Poll'),
+                                  GestureDetector(
+                                    onTap: () => _selectMedia('NSFW'),
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                      decoration: BoxDecoration(
+                                        color: Colors.black,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: const Text(
+                                        'NSFW',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ),
                                   ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          
+                          // Spill button
+                          Container(
+                            margin: const EdgeInsets.only(top: 16, left: 12),
+                            child: ElevatedButton(
+                              onPressed: _canPost ? _createPost : null,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppTheme.purpleAccent,
+                                foregroundColor: Colors.white,
+                                disabledBackgroundColor: AppTheme.purpleAccent.withOpacity(0.5),
+                                disabledForegroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                              ),
+                              child: const Text(
+                                'Spill',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
                                 ),
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
