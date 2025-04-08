@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import '../models/group.dart';
 import '../services/group_service.dart';
+import '../utils/app_theme.dart';
 import '../widgets/group_item.dart';
 import '../widgets/group_category_chip.dart';
 import 'group_detail_screen.dart';
 import 'create_group_screen.dart';
 
 class GroupsScreen extends StatefulWidget {
-  const GroupsScreen({Key? key}) : super(key: key);
+  // Added showBackButton parameter to control whether to show the back button
+  final bool showBackButton;
+  
+  const GroupsScreen({Key? key, this.showBackButton = false}) : super(key: key);
 
   @override
   State<GroupsScreen> createState() => _GroupsScreenState();
@@ -121,22 +125,23 @@ class _GroupsScreenState extends State<GroupsScreen> with SingleTickerProviderSt
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.deepPurple.shade50,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
-        leading: IconButton(
+        // Only show back button if showBackButton is true
+        leading: widget.showBackButton ? IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
-        ),
+        ) : null,
         title: _isSearching
             ? TextField(
                 controller: _searchController,
                 focusNode: _searchFocusNode,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'What are you interested in?',
                   hintStyle: TextStyle(color: Colors.white70),
                   border: InputBorder.none,
                 ),
-                style: TextStyle(color: Colors.white),
+                style: const TextStyle(color: Colors.white),
                 onChanged: (value) {
                   setState(() {
                     _searchQuery = value;
@@ -162,15 +167,7 @@ class _GroupsScreenState extends State<GroupsScreen> with SingleTickerProviderSt
             },
           ),
         ],
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.deepPurple.shade600, Colors.purple.shade300],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
+        backgroundColor: Colors.transparent,
         elevation: 0,
         bottom: TabBar(
           controller: _tabController,
@@ -232,7 +229,7 @@ class _GroupsScreenState extends State<GroupsScreen> with SingleTickerProviderSt
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xFF7941FF),
+        backgroundColor: AppTheme.purpleAccent,
         onPressed: _navigateToCreateGroup,
         child: const Icon(Icons.add, color: Colors.white),
       ),
@@ -271,7 +268,7 @@ class _GroupsScreenState extends State<GroupsScreen> with SingleTickerProviderSt
                   : 'No groups found matching your criteria',
               style: TextStyle(
                 fontSize: 18,
-                color: Colors.grey[700],
+                color: Colors.white,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -285,10 +282,10 @@ class _GroupsScreenState extends State<GroupsScreen> with SingleTickerProviderSt
                   _filterGroups();
                 });
               },
-              child: Text(
+              child: const Text(
                 'Clear filters',
                 style: TextStyle(
-                  color: const Color(0xFF7941FF),
+                  color: AppTheme.purpleAccent,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -308,8 +305,8 @@ class _GroupsScreenState extends State<GroupsScreen> with SingleTickerProviderSt
               displayGroups.isEmpty
                   ? 'No groups found'
                   : 'Showing ${displayGroups.length} groups',
-              style: TextStyle(
-                color: Colors.grey[700],
+              style: const TextStyle(
+                color: Colors.white,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -317,13 +314,14 @@ class _GroupsScreenState extends State<GroupsScreen> with SingleTickerProviderSt
         
         // My Groups section
         if (myGroupsOnly)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
             child: Text(
               'My Groups',
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
+                color: Colors.white,
               ),
             ),
           ),
@@ -340,10 +338,10 @@ class _GroupsScreenState extends State<GroupsScreen> with SingleTickerProviderSt
             child: Center(
               child: TextButton(
                 onPressed: () {},
-                child: Text(
+                child: const Text(
                   'See More Groups',
                   style: TextStyle(
-                    color: const Color(0xFF7941FF),
+                    color: AppTheme.purpleAccent,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
