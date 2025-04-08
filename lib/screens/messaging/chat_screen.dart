@@ -117,6 +117,10 @@ class _ChatScreenState extends State<ChatScreen> {
 
     // Clear the input field
     _messageController.clear();
+    
+    // Store the image file temporarily before clearing state
+    final imageFileToSend = _imageFile;
+    
     setState(() {
       _isTyping = false;
       _imageFile = null;
@@ -135,14 +139,16 @@ class _ChatScreenState extends State<ChatScreen> {
       }
       
       // Send image message if there's an image
-      if (_imageFile != null) {
-        // In a real app, upload the image and get a URL
-        // For demo purposes, we'll just use a placeholder
+      if (imageFileToSend != null) {
+        // In a real app, this would upload to a server and get a URL
+        // For now, create a URL from the local path with a special prefix
+        final imageUrl = 'file://${imageFileToSend.path}';
+        
         await widget.messagingService.sendMessage(
           senderId: _currentUserId!,
           receiverId: widget.otherUser.id,
-          content: 'Image message',
-          mediaUrl: 'https://example.com/image.jpg', // Placeholder URL
+          content: text.isEmpty ? "Image sent" : text,  // Use the text if provided, otherwise use default
+          mediaUrl: imageUrl,
           type: MessageType.image,
         );
       }
