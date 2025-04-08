@@ -31,7 +31,7 @@ class SpillApp extends StatelessWidget {
     
     return MultiProvider(
       providers: [
-        Provider<UserService>(
+        ChangeNotifierProvider<UserService>(
           create: (_) => UserService(),
         ),
         Provider<PostService>(
