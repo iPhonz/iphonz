@@ -343,7 +343,8 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                 onPressed: () {
                   final messagingService = Provider.of<MessagingService>(context, listen: false);
                   // Create a new conversation or get existing one
-                  messagingService._getOrCreateConversation(_currentUserId!, _user!.id).then((conversationId) {
+                  // Updated to use the public method instead of the private one
+                  messagingService.getOrCreateConversation(_currentUserId!, _user!.id).then((conversationId) {
                     Navigator.push(
                       context, 
                       MaterialPageRoute(
