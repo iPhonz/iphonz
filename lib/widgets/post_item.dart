@@ -5,6 +5,7 @@ import '../screens/comments_screen.dart';
 import '../screens/group_detail_screen.dart';
 import '../services/comment_service.dart';
 import '../services/group_service.dart';
+import '../utils/app_theme.dart';
 
 class PostItem extends StatelessWidget {
   final Post post;
@@ -32,8 +33,16 @@ class PostItem extends StatelessWidget {
     final comments = commentService.getCommentsForPost(post.id);
     
     return Container(
-      color: Colors.black,
       margin: const EdgeInsets.only(bottom: 12.0),
+      decoration: BoxDecoration(
+        color: Colors.black,
+        border: Border(
+          bottom: BorderSide(
+            color: Colors.grey.withOpacity(0.1),
+            width: 0.5,
+          ),
+        ),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -74,16 +83,16 @@ class PostItem extends StatelessWidget {
                           },
                           child: Row(
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.group,
                                 size: 14,
-                                color: Color(0xFF7941FF),
+                                color: AppTheme.purpleAccent,
                               ),
                               const SizedBox(width: 4),
                               Text(
                                 group!.name,
-                                style: const TextStyle(
-                                  color: Color(0xFF7941FF),
+                                style: TextStyle(
+                                  color: AppTheme.purpleAccent,
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -102,8 +111,8 @@ class PostItem extends StatelessWidget {
                             const SizedBox(width: 4),
                             Text(
                               post.user.bio!,
-                              style: TextStyle(
-                                color: Colors.grey.shade600,
+                              style: const TextStyle(
+                                color: Colors.grey,
                                 fontSize: 14,
                               ),
                               maxLines: 1,
@@ -123,19 +132,19 @@ class PostItem extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       decoration: BoxDecoration(
                         color: (group?.isJoined ?? post.isJoined ?? false) 
-                            ? const Color(0xFF7941FF) 
+                            ? AppTheme.purpleAccent 
                             : null,
                         borderRadius: BorderRadius.circular(20),
                         border: (group?.isJoined ?? post.isJoined ?? false) 
                             ? null 
-                            : Border.all(color: const Color(0xFF7941FF)),
+                            : Border.all(color: AppTheme.coral),
                       ),
                       child: Text(
                         (group?.isJoined ?? post.isJoined ?? false) ? 'Joined' : 'Join',
                         style: TextStyle(
                           color: (group?.isJoined ?? post.isJoined ?? false) 
                               ? Colors.white 
-                              : const Color(0xFF7941FF),
+                              : AppTheme.coral,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -161,12 +170,18 @@ class PostItem extends StatelessWidget {
           if (post.imageUrl != null)
             Container(
               width: double.infinity,
-              height: 240,
+              constraints: const BoxConstraints(
+                maxHeight: 400,
+              ),
               decoration: BoxDecoration(
                 image: DecorationImage(
                   image: AssetImage(post.imageUrl!),
                   fit: BoxFit.cover,
                 ),
+              ),
+              child: AspectRatio(
+                aspectRatio: 16 / 9,
+                child: Container(),
               ),
             ),
           
@@ -185,12 +200,6 @@ class PostItem extends StatelessWidget {
                   ),
                 ),
                 
-                // Refresh/Repost button
-                _buildEngagementButton(
-                  icon: Icons.refresh_rounded,
-                  count: null,
-                ),
-                
                 // Comments button
                 GestureDetector(
                   onTap: () {
@@ -203,7 +212,7 @@ class PostItem extends StatelessWidget {
                   },
                   child: _buildEngagementButton(
                     icon: Icons.chat_bubble_outline,
-                    count: comments.length > 0 ? comments.length : null,
+                    count: comments.isNotEmpty ? comments.length : post.comments,
                   ),
                 ),
                 
@@ -224,8 +233,8 @@ class PostItem extends StatelessWidget {
             padding: const EdgeInsets.only(left: 12.0, right: 12.0, bottom: 12.0),
             child: Text(
               _getTimeAgo(post.timestamp),
-              style: TextStyle(
-                color: Colors.grey.shade600,
+              style: const TextStyle(
+                color: Colors.grey,
                 fontSize: 12,
               ),
             ),
@@ -272,8 +281,8 @@ class PostItem extends StatelessWidget {
         spans.add(
           TextSpan(
             text: word,
-            style: const TextStyle(
-              color: Color(0xFF7941FF),
+            style: TextStyle(
+              color: AppTheme.purpleAccent,
               fontWeight: FontWeight.bold,
             ),
           ),
