@@ -37,7 +37,7 @@ class SpillApp extends StatelessWidget {
         Provider<PostService>(
           create: (_) => PostService(),
         ),
-        Provider<GroupService>(
+        ChangeNotifierProvider<GroupService>(
           create: (_) => GroupService(),
         ),
         ProxyProvider<UserService, MessagingService>(
