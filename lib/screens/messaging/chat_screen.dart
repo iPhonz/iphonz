@@ -5,6 +5,7 @@ import '../../models/message.dart';
 import '../../models/user.dart';
 import '../../services/messaging_service.dart';
 import '../../widgets/messaging/message_bubble.dart';
+import '../../utils/app_theme.dart';
 
 class ChatScreen extends StatefulWidget {
   final User otherUser;
@@ -166,22 +167,32 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         title: Row(
           children: [
             CircleAvatar(
-              backgroundImage: NetworkImage(widget.otherUser.profileImage),
+              backgroundImage: AssetImage(widget.otherUser.profileImage),
               radius: 16,
+              backgroundColor: AppTheme.purpleAccent,
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 12),
             Text(
               widget.otherUser.displayName,
-              style: const TextStyle(color: Colors.white),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ],
         ),
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: Colors.transparent,
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.info_outline, color: Colors.white),
@@ -192,13 +203,7 @@ class _ChatScreenState extends State<ChatScreen> {
         ],
       ),
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Colors.deepPurple, Colors.pink.shade300],
-          ),
-        ),
+        decoration: AppTheme.messageGradientBackground,
         child: Column(
           children: [
             Expanded(
@@ -220,21 +225,36 @@ class _ChatScreenState extends State<ChatScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.message, size: 80, color: Colors.white70),
-          const SizedBox(height: 16),
+          Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(40),
+            ),
+            child: Icon(
+              Icons.message_outlined,
+              size: 40,
+              color: AppTheme.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 24),
           Text(
             'No messages yet with ${widget.otherUser.displayName}',
             textAlign: TextAlign.center,
             style: const TextStyle(
-              fontSize: 18,
-              color: Colors.white,
+              fontSize: 20,
+              color: AppTheme.textPrimary,
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           const Text(
             'Send a message to start the conversation',
-            style: TextStyle(fontSize: 14, color: Colors.white70),
+            style: TextStyle(
+              fontSize: 16,
+              color: AppTheme.textSecondary,
+            ),
           ),
         ],
       ),
@@ -261,7 +281,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _buildInputArea() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
@@ -282,13 +302,14 @@ class _ChatScreenState extends State<ChatScreen> {
               IconButton(
                 icon: const Icon(Icons.photo),
                 onPressed: _pickImage,
-                color: Colors.deepPurple,
+                color: AppTheme.purpleAccent,
               ),
               Expanded(
                 child: TextField(
                   controller: _messageController,
                   decoration: InputDecoration(
-                    hintText: 'Message ${widget.otherUser.displayName}',
+                    hintText: 'Message',
+                    hintStyle: TextStyle(color: Colors.grey.shade500),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(30),
                       borderSide: BorderSide.none,
@@ -299,6 +320,10 @@ class _ChatScreenState extends State<ChatScreen> {
                       horizontal: 20,
                       vertical: 10,
                     ),
+                  ),
+                  style: const TextStyle(
+                    color: Color(0xFF333333),
+                    fontSize: 16,
                   ),
                   maxLines: null,
                   textCapitalization: TextCapitalization.sentences,
@@ -313,11 +338,11 @@ class _ChatScreenState extends State<ChatScreen> {
               GestureDetector(
                 onTap: _isTyping || _imageFile != null ? _sendMessage : null,
                 child: Container(
-                  padding: const EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: _isTyping || _imageFile != null 
-                        ? Colors.deepPurple 
-                        : Colors.grey,
+                        ? AppTheme.purpleAccent 
+                        : Colors.grey.shade400,
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
