@@ -9,6 +9,7 @@ import 'compose_screen.dart';
 import 'notifications_screen.dart';
 import 'profile_screen.dart';
 import 'groups_screen.dart';
+import 'messaging/conversations_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final String? userId;
@@ -81,15 +82,24 @@ class _HomeScreenState extends State<HomeScreen> {
       MaterialPageRoute(builder: (context) => const GroupsScreen()),
     );
   }
+  
+  // Method to navigate to messaging screen
+  void _navigateToMessagingScreen() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ConversationsScreen(
+          userService: _userService,
+          messagingService: MessagingService(userService: _userService),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     // Get unread notifications count
     final unreadCount = _notificationService.getUnreadCount();
-    
-    // Get unread group spills count (still tracked for the bottom nav)
-    final unreadGroupsCount = _groupService.getJoinedGroups()
-        .fold<int>(0, (int sum, group) => sum + group.newSpillsCount);
     
     return Scaffold(
       // Use a gradient background color
@@ -111,7 +121,11 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: const Icon(Icons.search, color: Colors.black),
             onPressed: () {},
           ),
-          // Removed the redundant group icon from here since it's already in the bottom navigation
+          // DM/Messaging icon moved to top right
+          IconButton(
+            icon: const Icon(Icons.message_outlined, color: Colors.black),
+            onPressed: _navigateToMessagingScreen,
+          ),
         ],
       ),
       // Post list
@@ -126,7 +140,7 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         },
       ),
-      // Custom bottom navigation bar with purple accent
+      // Only keep the bottom navigation bar
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
           color: Colors.white,
@@ -223,12 +237,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
-      ),
-      // Floating action button for quick compose access
-      floatingActionButton: FloatingActionButton(
-        onPressed: _navigateToComposeScreen,
-        backgroundColor: const Color(0xFF7941FF),
-        child: const Icon(Icons.edit, color: Colors.white),
       ),
     );
   }
